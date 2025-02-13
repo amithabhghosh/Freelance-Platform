@@ -2,7 +2,7 @@ const Review=require("../Models/ReviewModel")
 //Post Review
 const reviewPosting=async(req,res)=>{
     try {
-        const { reviewerId, reviewerType, revieweeId, revieweeType, jobId, rating, comment } = req.body;
+        const { reviewerId, reviewerType, revieweeId, revieweeType, jobId, rating, message } = req.body;
         if (!['Client', 'Freelancer'].includes(reviewerType) || !['Client', 'Freelancer'].includes(revieweeType)) {
             return res.status(400).json({ success: false, message: 'Invalid reviewer or reviewee type' });
         }
@@ -11,7 +11,7 @@ const reviewPosting=async(req,res)=>{
             return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5' });
         }
 
-        const newReview = new Review({ reviewerId, reviewerType, revieweeId, revieweeType, projectId, rating, comment });
+        const newReview = new Review({ reviewerId, reviewerType, revieweeId, revieweeType, jobId, rating, message });
         await newReview.save();
 
         res.status(201).json({ success: true, message: 'Review added successfully', data: newReview });

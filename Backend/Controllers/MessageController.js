@@ -4,14 +4,14 @@ const Message=require("../Models/MessageModel")
 //Post Message
 const messageSent=async(req,res)=>{
 try {
-    const { senderId, senderType, receiverId, receiverType, projectId, message } = req.body;
+    const { senderId, senderType, receiverId, receiverType, jobId, message } = req.body;
 
  
     if (!['Client', 'Freelancer'].includes(senderType) || !['Client', 'Freelancer'].includes(receiverType)) {
         return res.status(400).json({ success: false, message: 'Invalid sender or receiver type' });
     }
 
-    const newMessage = new Message({ senderId, senderType, receiverId, receiverType, projectId, message });
+    const newMessage = new Message({ senderId, senderType, receiverId, receiverType, jobId, message });
     await newMessage.save();
 
     res.status(201).json({ success: true, message: 'Message sent successfully', data: newMessage });

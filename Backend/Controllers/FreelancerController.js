@@ -46,7 +46,7 @@ const loginFreelancer=async(req,res)=>{
             return res.status(400).json({success:false,message:"Invalid creditnals"})
         }
 const token = await jwt.sign({id:user._id},process.env.SECRET_KEY,{expiresIn:"1d"})
-return res.status(200).json({success:true,message:"Login Succesfull",token})
+return res.status(200).json({success:true,message:"Login Succesfull",token,id:user._id})
     } catch (error) {
        return res.status(500).json({success:false,message:"Login Unsuccessful"})
     }
