@@ -1,0 +1,47 @@
+.clientProposalCard{
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease-in-out;
+}
+.clientProposalCard:hover{
+    transform: translateY(-3px);   
+}
+.clientProposalCardName{
+    flex: 1;
+}
+.clientProposalCardName h3{
+    font-size: 1.4rem;
+    color: #333;
+}
+.clientProposalCardName p{
+    font-size: 1rem;
+    color: #555;
+    margin: 5px 0;
+}
+.clientProposalStatus{
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+  .pending {
+    background: #ffeb3b;
+    color: #856404;
+  }
+
+  @media (max-width: 768px) {
+    .clientProposalCard {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 10px;
+    }
+  
+    .clientProposalStatus {
+      align-self: flex-start;
+    }
+  }

@@ -5,7 +5,7 @@ const Client = require('../Models/ClientModel');
 require("dotenv").config()
 
 const protect=async(req,res,next)=>{
-    const token = req.headers.authorization;
+    const {token} = req.headers
     if (!token) {
         return res.status(401).json({ success:false,message: "No token, authorization denied" });
     }

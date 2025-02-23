@@ -1,0 +1,93 @@
+.ClientProposalDetail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
+    margin-top: 120px;
+}
+
+.proposalArea, .freelancerProposalDetails {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 45%;
+    min-width: 300px;
+}
+
+/* Headings */
+.propsalHeadings, .frelancerProposalTags {
+    margin-bottom: 15px;
+}
+
+.propsalHeadings h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+}
+.frelancerProposalTags h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.propsalHeadings p {
+    font-size: 14px;
+    color: #555;
+}
+.frelancerProposalTags p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Buttons */
+.proposalAcceptButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.proposalAcceptButtons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.proposalAcceptButtons button:first-child {
+    background: #4CAF50;
+    color: white;
+}
+
+.proposalAcceptButtons button:last-child {
+    background: #E74C3C;
+    color: white;
+}
+
+/* Reviews */
+.reviewProposalForClients {
+    margin-top: 20px;
+}
+
+.reviews {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ClientProposalDetail {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .proposalArea, .freelancerProposalDetails {
+        width: 100%;
+    }
+}

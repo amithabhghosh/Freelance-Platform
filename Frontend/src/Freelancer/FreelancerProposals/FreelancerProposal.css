@@ -1,0 +1,48 @@
+/* Main Container */
+.freelancerProposal {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 120px;
+  }
+  
+  /* Heading Styling */
+  .proposalsHeading {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .proposalsHeading h2 {
+    font-size: 1.8rem;
+    color: #333;
+  }
+  
+  /* Proposal List */
+  .proposalLists {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* No Proposals Message */
+  .proposalLists p {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #777;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .freelancerProposal {
+      padding: 15px;
+      max-width: 95%;
+    }
+  
+    .proposalsHeading h2 {
+      font-size: 1.5rem;
+    }
+  }
+  

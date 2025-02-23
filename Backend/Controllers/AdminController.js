@@ -34,11 +34,11 @@ const {email,password}=req.body
 try {
     const existingUser=await Admin.findOne({email})
     if(!existingUser){
-        return res.status(400).json({success:false,message:"Admin Not found"})
+        return res.json({success:false,message:"Admin Not found"})
     }
     const isMatch=await bcrypt.compare(password,existingUser.password)
     if(!isMatch){
-return res.status(401).json({success:false,message:"Invalid Credinals"})
+return res.json({success:false,message:"Invalid Credinals"})
     }
      const token =await jwt.sign({id:existingUser._id},process.env.SECRET_KEY, { expiresIn: "1d" })
      return res.status(200).json({success:true,message:"Admin Login Successfully",token})
@@ -50,7 +50,7 @@ return res.status(401).json({success:false,message:"Invalid Credinals"})
 //Get All Freelancer List
 const getAllFreelancer=async(req,res)=>{
 try {
-    const freelancers=await Freelancer.find()
+    const freelancers=await Freelancer.find().select("-password")
    return res.status(200).json({success:true,freelancers})
 } catch (error) {
    return res.status(500).json({success:false,message:error.message})
@@ -60,7 +60,7 @@ try {
 //Get All Client List
 const getAllClient=async(req,res)=>{
 try {
-    const clients=await Client.find()
+    const clients=await Client.find().select("-password")
    return res.status(200).json({success:true,clients})
 } catch (error) {
   return  res.status(500).json({success:false,message:error.message})
@@ -100,7 +100,7 @@ return res.status(200).json({success:true,freelancer})
 const getOneFreelancer=async(req,res)=>{
 const {id}=req.params
 try {
-  const freelancer= await Freelancer.find({_id:id}) 
+  const freelancer= await Freelancer.findOne({_id:id}).select("-password") 
   if(!freelancer){
     return res.status(400).json({success:false,message:"Freelancer Not Found"})
   } 
@@ -115,7 +115,7 @@ try {
 const getOneClient=async(req,res)=>{
 const {id}=req.params
 try {
-    const client=await Client.find({_id:id})
+    const client=await Client.findOne({_id:id})
     if(!client){
         return res.status(400).json({success:false,message:"Client Not Found"})
     }
@@ -129,7 +129,7 @@ try {
 const getOneJob=async(req,res)=>{
 const {id}=req.params
 try {
-    const job=await Job.find({_id:id})
+    const job=await Job.findOne({_id:id})
     if(!job){
         return res.status(400).json({success:false,message:"Job Not Found"})
     }

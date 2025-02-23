@@ -10,9 +10,16 @@ const FreelancerRoute=require("./Routes/FreelancerRoute")
 const AdminRoute=require("./Routes/AdminRoute")
 const MessageRoute=require("./Routes/MessageRoute")
 const ReviewRoute=require("./Routes/ReviewRoute")
+const PaymentRoute=require("./Routes/PaymentRoute")
 connectDb()
 
-app.use(cors())
+const allowedOrigin = "http://localhost:5173";
+
+app.use(cors({
+  origin: allowedOrigin,  // Use the exact frontend URL here
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true  // Allow credentials to be sent
+}));
 app.use(express.json())
 app.use(bodyParser.json())
 
@@ -22,6 +29,8 @@ app.use("/api/freelancer",FreelancerRoute)
 app.use("/api/admin",AdminRoute)
 app.use("/api/message",MessageRoute)
 app.use("/api/review",ReviewRoute)
+app.use("/api/payment",PaymentRoute)
+
 
 app.get("/",(req,res)=>{
     res.send("Hello World")

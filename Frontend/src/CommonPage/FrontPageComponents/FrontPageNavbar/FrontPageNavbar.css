@@ -1,0 +1,70 @@
+/* FrontPageNavbar.css */
+.frontPageNavbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .logo img {
+    height: 50px;
+  }
+  
+  .frontNavList {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+  }
+  
+  .frontNavList li {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    transition: color 0.3s;
+  }
+  
+  .frontNavList li:hover {
+    color: #007bff;
+  }
+  
+  /* Responsive Navbar */
+  @media screen and (max-width: 768px) {
+    .frontNavList {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      right: 0;
+      background: white;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 15px 0;
+    }
+  
+    .frontNavList.active {
+      display: flex;
+    }
+  
+    .menu-icon {
+      display: block;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  }
+  
+  /* Hide menu icon on larger screens */
+  @media screen and (min-width: 769px) {
+    .menu-icon {
+      display: none;
+    }
+  }
+  
