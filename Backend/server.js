@@ -16,12 +16,16 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
         origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST"]
     }
 });
 
-// Middleware
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({
+    origin: ["http://localhost:5173"], 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
+
 
 
 app.use((req, res, next) => {
@@ -33,7 +37,7 @@ app.use((req, res, next) => {
 });
 
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 // Routes
 app.use("/api/client", require("./Routes/ClientRoute"));
