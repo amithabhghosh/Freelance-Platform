@@ -22,7 +22,7 @@ export const FreelancerWorkDetails = () => {
 
 
 useEffect(() => {
-  const newSocket = io("http://localhost:5000", { reconnection: true });
+  const newSocket = io("https://freelancebackend-gamma.vercel.app", { reconnection: true });
   setSocket(newSocket);
 
   if (freelancerId && jobId) {
@@ -123,7 +123,7 @@ const sendMessage = async () => {
       // setAllMessages((prev) => [...prev, newMsg]);// Add message instantly
     }
   } catch (error) {
-    console.error("Error sending message:", error);
+   return toast.error(error.message)
   }
 
   setMessage("");

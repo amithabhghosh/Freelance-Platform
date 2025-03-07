@@ -69,7 +69,7 @@ useEffect(()=>{
     </div>
 
     <div className="mt-2 md:mt-0">
-      <ClientCoundownTimer deadline={props.deadline} jobStatus={jobData?jobData.status:null} startTime={props.startTime} />
+      <ClientCoundownTimer deadline={props.deadline} jobStatus={jobData?jobData.status : null} startTime={props.startTime} />
     </div>
   </div>
 

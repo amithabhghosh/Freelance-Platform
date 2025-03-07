@@ -163,7 +163,7 @@ const paymentToWork = async () => {
             toast.error(response.data.message);
         }
     } catch (error) {
-        console.error(error);
+       
         toast.error(error.response?.data?.message || "Payment failed");
     }
 };
@@ -178,6 +178,11 @@ if (loading) {
 }
 
   return freelancerData && (
+<>
+{loading ? (
+  <LoadingSpinner/>
+) : (
+
 
 <div className="flex flex-col min-h-screen items-center gap-10 mt-28 p-5 w-full max-w-6xl mx-auto">
 
@@ -280,6 +285,12 @@ if (loading) {
 </div>
 
 
+)}
+
+
+
+
+</>
 
   )
 }

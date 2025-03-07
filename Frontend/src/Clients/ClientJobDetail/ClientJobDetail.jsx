@@ -18,7 +18,7 @@ const loadJobData=async()=>{
         const response=await API.get(`/client/getJob/${jobId}`,{headers:{token:clientToken}})
         console.log("API Response:", response.data);
         if(response.data.success){
-            console.log(response.data.job)
+           
             setJobData(response.data.job)
         }else{
             toast.error(response.data.message)
@@ -51,7 +51,7 @@ useEffect(() => {
 
     
       {loading ? (
-                // <p className="text-center text-gray-500">Loading...</p>
+                
                 <LoadingSpinner/>
             ) : jobData ? (
                 <div className="space-y-4">

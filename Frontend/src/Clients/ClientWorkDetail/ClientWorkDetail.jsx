@@ -238,7 +238,7 @@ useEffect(()=>{
   <div className="flex flex-col lg:flex-row gap-6 w-full mt-6">
     
 
-    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex flex-col h-[500px] flex-1">
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex flex-col  min-h-[500px]   flex-1">
       
       
       <div className="flex-1 overflow-y-auto space-y-3 p-3 border-b border-gray-300 scrollbar-hidden" ref={chatBoxRef}>

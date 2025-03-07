@@ -484,7 +484,7 @@ if(!job){
         }
 
         const payment =  await Payment.findOneAndUpdate(
-            { jobId: jobId, clientId: clientId, freelancerId:freelancerId }, // Matching criteria
+            { jobId: jobId, clientId: clientId, freelancerId:freelancerId },
             { $set: { status: "completed" } }, 
             { new: true } 
         );

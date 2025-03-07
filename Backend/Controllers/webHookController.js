@@ -39,13 +39,13 @@ const stripeWebhookHandler = async (req, res) => {
             await Job.findByIdAndUpdate(jobId, { status: "assigned" });
 
             // Update proposal status
-            await Proposal.findByIdAndUpdate(proposalId, { status: "accepted" });
+            await Proposal.findByIdAndUpdate(proposalId, { status: "accepted",startTime: new Date()},{new:true});
 
             await Proposal.updateMany(
                             { jobId: jobId, _id: { $ne: proposalId } }, 
                             { $set: { status: "rejected" } } 
                         ); 
-                        
+
             console.log(`✅ Payment verified for job ${jobId} and proposal ${proposalId}`);
             res.status(200).json({ received: true });
         } catch (error) {

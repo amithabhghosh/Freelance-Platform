@@ -18,8 +18,7 @@ export const ClientWorkCard = (props) => {
 
 
     const loadPaymentForParticularJob=async()=>{
-        console.log("ClientWorkCard Props:", props);
-console.log("Job ID for Payment:", jobId);
+        
 
         try {
             const response=await API.get(`/client/getPaymentData/${jobId}`,{headers:{token:clientToken}})
@@ -27,8 +26,7 @@ console.log("Job ID for Payment:", jobId);
 setProposalId(response.data.data.proposalId)
                 setPaymentDataAmount(response.data.data.amount)
                 setPaymentDataStatus(response.data.data.status)
-                console.log("amount",paymentDataAmount)
-                console.log("status",paymentDataStatus)
+                
             }else{
                 toast.error(response.data.message)
             }
@@ -66,21 +64,7 @@ if(clientId && clientToken){
 }
     })
   return (
-    // <div className="client-work-card" onClick={() => navigate(`/client/Works/${jobId}`)}>
-    //   <div className="work-details">
-    //     <h3>Title: {props.title}</h3>
-    //     <h3>Category: {props.catagory}</h3>
-    //     <h3>Job Status: {props.status}</h3>
-    //     <div className="payment-section">
-    //       <h4>Amount Paid: {paymentDataAmount} $</h4>
-    //       <h4>Payment Status: {paymentDataStatus}</h4>
-    //     </div>
-    //   </div>
-    //   <div className="timer-section">
-    //     <ClientCoundownTimer deadline={proposalDeadline} jobStatus={props.status} startTime={startTime} />
-    //   </div>
-    // </div>
-
+ 
 
     <div 
     className="flex flex-col md:flex-row justify-between items-center bg-white rounded-lg shadow-md p-5 my-2 cursor-pointer transition-transform duration-200 hover:-translate-y-1"
