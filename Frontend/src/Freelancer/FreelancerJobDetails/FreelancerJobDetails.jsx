@@ -56,7 +56,7 @@ const sentProposal = async () => {
       return toast.error("All Fields Required");
   }
 
-  if(freelancerData.isVerified){
+  if(!freelancerData.isVerified){
     return toast.error("You Are Not Verified")
   }
   try {  
