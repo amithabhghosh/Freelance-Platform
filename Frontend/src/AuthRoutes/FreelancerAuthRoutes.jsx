@@ -1,8 +1,14 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
+import  {checkTokenExpiration} from '../checkTokenExpiry'
 export const FreelancerAuthRoutes = ({ children }) => {
+
+
+  useEffect(() => {
+    checkTokenExpiration(); // Runs on page load
+  }, []);
+
   const navigate = useNavigate();
   const freelancerToken = localStorage.getItem("freelancerToken");
 

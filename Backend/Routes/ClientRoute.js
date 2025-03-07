@@ -1,5 +1,5 @@
 const express=require("express");
-const {registerClient, loginClient, postJob, getPostedJobByClient, getProposalsRecievedByClient, updateProposalStatus, proposalsRecievedForJob, ClientImageUpload, updateJobAssignedStatus, updateJobCompleteStatus, messagePostedByClient, messageRecievedForClientAndFreelancer, getJobAnswer, signUp, verifyOtp, getClientData, updataClientData, getJobByJobId, getProposalByProposalId, getFreelancerByFreelancerId} = require("../Controllers/ClientControllers");
+const {registerClient, loginClient, postJob, getPostedJobByClient, getProposalsRecievedByClient, updateProposalStatus, proposalsRecievedForJob, ClientImageUpload, updateJobAssignedStatus, updateJobCompleteStatus, messagePostedByClient, messageRecievedForClientAndFreelancer, getJobAnswer, signUp, verifyOtp, getClientData, updataClientData, getJobByJobId, getProposalByProposalId, getFreelancerByFreelancerId, getJobByProposalId, getJobAssignedClient, getPaymentDataByJobId, getProposalByClientIdAndClientId, rejectAnswerSubmission, finalJobSubmission, sentClientResetOtp, updateClientPassword, getPostedJobs, getPaymentByClient} = require("../Controllers/ClientControllers");
 const upload = require("../Config/multerConfig");
 const router=express.Router()
 const protect=require("../MiddleWares/authMiddleware")
@@ -47,13 +47,38 @@ router.get("/getJobAnswer/:jobId",protect,authorize("Client"),getJobAnswer)
 
 router.get("/getClientData",clientAuth,getClientData)   //used
 
+
 router.put("/updateClientData",upload.single("profile"),clientAuth,updataClientData)   //used
+
 
 router.get("/getJob/:jobId",protect,authorize("Client"),getJobByJobId)
 
+
 router.get("/getProposalByProposalId/:proposalId",getProposalByProposalId)
+
 
 router.get("/getFreelancerByFreelancerId/:freelancerId",getFreelancerByFreelancerId)
 
 
+router.get("/getJobByProposalId/:proposalId",protect,authorize("Client"),getJobByProposalId)
+
+
+router.get("/getJobCompletedAndAssigned",protect,authorize("Client"),getJobAssignedClient)
+
+
+router.get("/getPaymentData/:jobId",protect,authorize("Client"),getPaymentDataByJobId)
+
+router.get("/getProposalByClientIdAndClientId/:clientId/:jobId",protect,authorize("Client"),getProposalByClientIdAndClientId)
+
+router.put("/rejectAnswerSubmission",protect,authorize("Client"),rejectAnswerSubmission)
+
+router.put("/finalJobSubmission/:submissionId",protect,authorize("Client"),finalJobSubmission)
+
+router.post("/sentClientResetOtp",sentClientResetOtp)
+
+router.put("/updateClientPassword",updateClientPassword)
+
+router.get("/getPostedJobs/:clientId",protect,authorize("Client"),getPostedJobs)
+
+router.get("/getPaymentByClient/:clientId",protect,authorize("Client"),getPaymentByClient)
 module.exports=router

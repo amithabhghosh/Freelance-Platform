@@ -7,6 +7,7 @@ const proposalSchema=new mongoose.Schema({
     clientId:{type:mongoose.Schema.Types.ObjectId,ref:"Client",required:true},
     freelancerId:{type:mongoose.Schema.Types.ObjectId,ref:"Freelancer",required:true},
     deadline:{type:Number},
-    status:{type:String,enum:["pending","accepted","rejected"],default:"pending"}
+    status:{type:String,enum:["pending","accepted","rejected"],default:"pending"},
+    startTime: { type: Date }
 })
 module.exports=mongoose.model("Proposal",proposalSchema)

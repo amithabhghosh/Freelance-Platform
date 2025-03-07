@@ -1,41 +1,82 @@
-const express=require("express")
-require("dotenv").config()
-const app=express()
-const cors=require("cors")
-const bodyParser=require("body-parser")
-const connectDb = require("./Config/db")
-const port=process.env.port
-const ClientRoute=require("./Routes/ClientRoute")
-const FreelancerRoute=require("./Routes/FreelancerRoute")
-const AdminRoute=require("./Routes/AdminRoute")
-const MessageRoute=require("./Routes/MessageRoute")
-const ReviewRoute=require("./Routes/ReviewRoute")
-const PaymentRoute=require("./Routes/PaymentRoute")
-connectDb()
+const express = require("express");
+require("dotenv").config();
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const connectDb = require("./Config/db");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const Message = require("./Models/MessageModel");
+const { stripeWebhookHandler } = require("./Controllers/webHookController");
 
-const allowedOrigin = "http://localhost:5173";
+// Connect DB
+connectDb();
 
-app.use(cors({
-  origin: allowedOrigin,  // Use the exact frontend URL here
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true  // Allow credentials to be sent
-}));
-app.use(express.json())
-app.use(bodyParser.json())
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+    }
+});
 
-
-app.use("/api/client",ClientRoute)
-app.use("/api/freelancer",FreelancerRoute)
-app.use("/api/admin",AdminRoute)
-app.use("/api/message",MessageRoute)
-app.use("/api/review",ReviewRoute)
-app.use("/api/payment",PaymentRoute)
+// Middleware
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 
-app.get("/",(req,res)=>{
-    res.send("Hello World")
-})
+app.use((req, res, next) => {
+    if (req.path === "/webhook") {
+        next(); 
+    } else {
+        express.json()(req, res, next);
+    }
+});
 
-app.listen(port,()=>{
-    console.log(`Server Running in the ${port}`)
-})
+
+app.use(bodyParser.json());
+
+// Routes
+app.use("/api/client", require("./Routes/ClientRoute"));
+app.use("/api/freelancer", require("./Routes/FreelancerRoute"));
+app.use("/api/admin", require("./Routes/AdminRoute"));
+app.use("/api/message", require("./Routes/MessageRoute"));
+app.use("/api/review", require("./Routes/ReviewRoute"));
+app.use("/api/payment", require("./Routes/PaymentRoute"));
+
+
+
+app.post("/webhook",express.raw({ type: "application/json" }),stripeWebhookHandler)
+
+
+app.get("/", (req, res) => res.send("Hello World"));
+
+
+io.on("connection", (socket) => {
+    
+    socket.on("joinRoom", ({ userId, jobId }) => {
+        socket.join(jobId);
+       
+    });
+
+    socket.on("sendMessage", async (data) => {
+        try {
+            const { senderId, receiverId, message, jobId, receiverType, senderType,image } = data;
+            
+    
+            io.to(jobId).emit("receiveMessage", {
+                senderId, receiverId, message, jobId, receiverType, senderType,image
+            });
+        } catch (error) {
+          return null
+        }
+    });
+
+    socket.on("disconnect", () => {
+        
+       
+    });
+});
+
+httpServer.listen(process.env.PORT || 5000, () => {
+    console.log(`Server running on port ${process.env.PORT || 5000}`);
+});

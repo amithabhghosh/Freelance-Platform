@@ -7,7 +7,8 @@ const SubmissionSchema = new mongoose.Schema({
     textAnswer1: { type: String, required: true },
     textAnswer2: { type: String },
     textAnswer3: { type: String },
-    files: [{ type: String }], // Cloudinary URLs
+    files: [{ type: String }], // Cloudinary URLs,
+    isOk:{type:String,enum:["Pending","Rejected","Completed"],default:"Pending"},
     submittedAt: { type: Date, default: Date.now }
 });
 

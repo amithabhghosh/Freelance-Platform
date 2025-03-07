@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react'
-import './FreelancerProposalDetails.css'
+
 import { ContextAPI } from '../../ContextAPI/ContextAPI'
 import { useParams } from 'react-router-dom'
 import API from '../../connectApi'
 import { toast } from 'react-toastify'
+import LoadingSpinner from '../../CommonPage/FrontPageComponents/Loading/Loading'
 export const FreelancerProposalDetails = () => {
     const { freelancerToken } = useContext(ContextAPI);
     const { proposalId } = useParams();
     const [proposalData, setProposalData] = useState(null);
     const [jobData, setJobData] = useState(null);
     const [jobId, setJobId] = useState("");
-
+const [loading,setLoading]=useState(true)
     const getJobId = async () => {
         try {
             const response = await API.get(`/freelancer/getProposalDetails/${proposalId}`, {
@@ -47,6 +48,7 @@ export const FreelancerProposalDetails = () => {
         }
 
         try {
+          setLoading(true)
             const response = await API.get(`/freelancer/job/${jobId}`, {
                 headers: { token: freelancerToken },
             });
@@ -56,8 +58,9 @@ export const FreelancerProposalDetails = () => {
             } else {
                 toast.error(response.data.message);
             }
+            setLoading(false)
         } catch (error) {
-            toast.error(error.message);
+    setJobData(null)
         }
     };
 
@@ -72,66 +75,93 @@ export const FreelancerProposalDetails = () => {
     }, [freelancerToken, proposalId]);
 
 
-  return jobData && (
-    <div className='FreelancerProposalDetails'>
-        <div className="jobProposalDetails">
-       <div className="head">
-        <h3>Job</h3>
-       </div>
-        <div className="proposalJobDetail">
-            <h4>Title</h4>
-            <p>{jobData.title}</p>
-        </div>
-        <div className="proposalJobDetail">
-            <h4>Description</h4>
-            <p>{jobData.description}</p>
-        </div>
-        <div className="proposalJobDetail">
-            <h4>Skills</h4>
-            <p>{jobData.skills}</p>
-        </div>
-        <div className="proposalJobDetail">
-            <h4>Catagory</h4>
-            <p>{jobData.catagory}</p>
-        </div>
-        <div className="proposalJobDetail">
-            <h4>Budget</h4>
-            <p>{jobData.budget}$</p>
-        </div>
-        <div className="proposalJobDetail">
-            <h4>Day Alloted</h4>
-            <p>{jobData.deadline} Days</p>
-        </div>
-        <div className="proposalJobStatus">
-            <h4>Status</h4>
-            <p>{jobData.status}</p>
-        </div>
-        </div>
-        <div className="freelancerProposalDetail">
-            <div className="head">
-              <h3>Proposal</h3>
+    return (
+      <div className="max-w-4xl mx-auto my-10 p-6 bg-white min-h-[400px] rounded-xl shadow-md mt-20">
+        {loading ? (
+          // Ensure the loading spinner maintains space to prevent layout shift
+          <div className="flex justify-center items-center min-h-[400px]">
+            <LoadingSpinner />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6">
+            {/* Job Details Section */}
+            <div className="bg-white p-6 rounded-lg shadow-md w-full transform transition-transform hover:scale-105">
+              <div className="text-center mb-4">
+                <h3 className="text-2xl font-semibold text-gray-800">Job Details</h3>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Title</h4>
+                <p className="text-gray-600">{jobData?.title}</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Description</h4>
+                <p className="text-gray-600">{jobData?.description}</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Skills</h4>
+                <p className="text-gray-600">{jobData?.skills}</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Category</h4>
+                <p className="text-gray-600">{jobData?.catagory}</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Budget</h4>
+                <p className="text-gray-600">{jobData?.budget}$</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Days Allotted</h4>
+                <p className="text-gray-600">{jobData?.deadline} Days</p>
+              </div>
+              <div
+                className={`mt-4 px-4 py-2 text-center rounded-md font-bold text-sm ${
+                  jobData?.status === 'pending'
+                    ? 'bg-yellow-400 text-yellow-900'
+                    : jobData?.status === 'assigned'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-red-500 text-white'
+                }`}
+              >
+                {jobData?.status === "pending" ? "Pending" : jobData?.status === "assigned" ? "Assigned" : jobData?.status === "completed" ? "Completed" : null}
+              </div>
             </div>
-            <div className="proposalDetailInfo">
-                <h4>Name</h4>
-                <p>{proposalData.name}</p>
+    
+           
+            <div className="bg-white p-6 rounded-lg shadow-md w-full transform transition-transform hover:scale-105">
+              <div className="text-center mb-4">
+                <h3 className="text-2xl font-semibold text-gray-800">Proposal Details</h3>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Name</h4>
+                <p className="text-gray-600">{proposalData?.name}</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Description</h4>
+                <p className="text-gray-600">{proposalData?.description}</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Budget</h4>
+                <p className="text-gray-600">{proposalData?.budget}$</p>
+              </div>
+              <div className="border-b border-gray-200 py-2">
+                <h4 className="text-gray-700 font-semibold">Deadline</h4>
+                <p className="text-gray-600">{proposalData?.deadline} Days</p>
+              </div>
+              <div
+                className={`mt-4 px-4 py-2 text-center rounded-md font-bold text-sm ${
+                  proposalData?.status === 'pending'
+                    ? 'bg-yellow-400 text-yellow-900'
+                    : proposalData?.status === 'accepted'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-red-500 text-white'
+                }`}
+              >
+                {proposalData?.status === "accepted" ? "Accepted" : proposalData?.status === "rejected" ? "Rejected" : proposalData?.status === "pending" ? "Pending" : null}
+              </div>
             </div>
-            <div className="proposalDetailInfo">
-                <h4>Description</h4>
-                <p>{proposalData.description}</p>
-            </div>
-            <div className="proposalDetailInfo">
-                <h4>Budget</h4>
-                <p>{proposalData.budget} $</p>
-            </div>
-            <div className="proposalDetailInfo">
-                <h4>Deadline</h4>
-                <p>{proposalData.deadline} Days</p>
-            </div>
-            <div className="proposalStatusInfo">
-                <h4>Status</h4>
-                <p>{proposalData.status}</p>
-            </div>
-        </div>
-    </div>
-  )
+          </div>
+        )}
+      </div>
+    );
+    
 }

@@ -6,7 +6,7 @@ export const ContextAPI = createContext(); // Create context
 
  const ContextProvider = ({ children }) => {
 
-
+const [loading,setLoading]=useState(true)
 const [freelancerToken,setFreelancerToken]=useState(localStorage.getItem("freelancerToken")?localStorage.getItem("freelancerToken"):false)
 const [freelancerData,setFreelancerData]=useState(false)
 
@@ -65,12 +65,14 @@ if(freelancerToken){
 
 const clientUploadedJobs=async()=>{
   try {
+    setLoading(true)
     const response=await API.get("/client/clientJobs",{headers:{token:clientToken}})
     if(response.data.success){
        setClientJobs(response.data.jobs)
     }else{
-      toast.error(response.data.message)
+      setClientJobs(null)
     }
+    setLoading(false)
   } catch (error) {
     toast.error(error.message)
   }
@@ -87,7 +89,7 @@ useEffect(()=>{
 
 
   return (
-    <ContextAPI.Provider value={{freelancerToken,clientId,setFreelancerToken,freelancerId,setFreelancerId,clientToken,setClientToken,freelancerData,setFreelancerData,loadFreelancerProfileData,loadClientData,clientData,clientJobs,setClientJobs,clientUploadedJobs,adminToken,setAdminToken}}>
+    <ContextAPI.Provider value={{loading,setLoading,freelancerToken,clientId,setFreelancerToken,freelancerId,setFreelancerId,clientToken,setClientToken,freelancerData,setFreelancerData,loadFreelancerProfileData,loadClientData,clientData,clientJobs,setClientJobs,clientUploadedJobs,adminToken,setAdminToken}}>
       {children}
     </ContextAPI.Provider>
   );

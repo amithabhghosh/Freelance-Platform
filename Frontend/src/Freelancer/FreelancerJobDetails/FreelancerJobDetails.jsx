@@ -1,57 +1,107 @@
 import React, { useContext, useEffect, useState } from 'react'
-import './FreelancerJobDetails.css'
+
 import { ContextAPI } from '../../ContextAPI/ContextAPI'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import API from '../../connectApi'
 import { toast } from 'react-toastify'
+import LoadingSpinner from '../../CommonPage/FrontPageComponents/Loading/Loading'
 export const FreelancerJobDetails = () => {
+  const navigate=useNavigate()
     const {jobId}=useParams()
-const {freelancerToken,freelancerId}=useContext(ContextAPI)
+const {freelancerToken,freelancerId,freelancerData}=useContext(ContextAPI)
 const [job,setJob]=useState(null)
 const [clientId,setClientId]=useState()
 const [name,setName]=useState("")
 const [description,setDescription]=useState("")
-const [budget,setBudget]=useState()
-const [deadline,setDeadline]=useState()
-
+const [budget,setBudget]=useState(null)
+const [deadline,setDeadline]=useState(null)
+const [buttonStatus,setButtonStatus]=useState(false)
 const [applied,setApplied]=useState("Not Applied")
-const findClientId=async()=>{
-    try {
-        const response=await API.get(`/freelancer/getClientId/${jobId}`)
-        if(response.data.success){
-setClientId(response.data.clientId.ClientId)
-        }else{
-            toast.error("Error Occured")
-        }
-    } catch (error) {
-        toast.error(error.message)
+const [reviews,setReviews]=useState([])
+const [loading,setLoading]=useState(true)
+const loadClientReview=async()=>{
+  
+  try {
+    const response=await API.get(`/review/getClientReviewsByScore/${clientId}`)
+
+    if(response.data.success){
+      if(response.data.topReviews.length===0){
+        return setReviews([])
+      }
+      setReviews(response.data.topReviews)
+    }else{
+      setReviews([])
     }
+  } catch (error) {
+    toast.error(error.message)
+  }
 }
-const sentProposal=async ()=>{
-    if(!name || !description || !budget || !deadline){
-      return toast.success("All Fields Required")
-    }
-    await findClientId()
-    try {
-        const response=await API.post("/freelancer/postProposal",{name,description,budget,jobId,freelancerId,deadline,clientId},{headers:{token:freelancerToken}})
-        if(response.data.success){
-            toast.success("Proposal Sent Successfull")
-        }else{
-            toast.error(response.data.message)
-        }
-    } catch (error) {
-        toast.error(error.message)
-    }
-}
+
+useEffect(() => {
+ 
+
+  if (clientId && freelancerId && freelancerToken) {
+    loadClientReview();
+  } else {
+    setReviews([]);
+  }
+}, [clientId, freelancerId, freelancerToken]);
+
+
+
+
+
+const sentProposal = async () => {
+  if (!name || !description || !budget || !deadline) {
+      return toast.error("All Fields Required");
+  }
+
+  if(freelancerData.isVerified){
+    return toast.error("You Are Not Verified")
+  }
+  try {  
+      const response = await API.get(`/freelancer/getClientId/${jobId}`);
+      if (!response.data.success) {
+          return toast.error("Error Occured");
+      }
+
+      const clientId = response.data.clientId.ClientId; 
+
+  
+      const proposalResponse = await API.post(
+          "/freelancer/postProposal",
+          { name, description, budget, jobId, freelancerId, deadline, clientId },
+          { headers: { token: freelancerToken } }
+      );
+
+      if (proposalResponse.data.success) {
+          toast.success("Proposal Sent Successfully");
+          setButtonStatus(true)
+          setName("")
+          setDeadline(null)
+          setDescription("")
+          setBudget(null)
+          navigate("/freelancer/proposals")
+      } else {
+          toast.error(proposalResponse.data.message);
+      }
+  } catch (error) {
+      toast.error(error.message);
+  }
+};
+
 
 const loadJobData=async()=>{
     try {
+      setLoading(true)
       const response=await API.get(`/freelancer/job/${jobId}`,{headers:{token:freelancerToken}})
       if(response.data.success){
         setJob(response.data.job)
+        setClientId(response.data.job.ClientId)
       }  else{
         toast.error(response.data.message)
       }
+      setLoading(false)
     } catch (error) {
         toast.error(error.message)
     }
@@ -60,7 +110,7 @@ const loadJobData=async()=>{
 
 const loadAppliedStatus=async()=>{
   try {
-    console.log("freelancerId",freelancerId)
+  
     const response=await API.get(`/freelancer/getAppliedStatus/${jobId}/${freelancerId}`)
     if(response.data.success){
       setApplied("Not Applied")
@@ -74,72 +124,146 @@ const loadAppliedStatus=async()=>{
 
 useEffect(()=>{
     if(freelancerToken){
-        loadJobData()
-       
+        loadJobData()      
     }else{
-        setJob(false)
-        
+        setJob(false)     
     }
- 
 },[freelancerToken,jobId])
 
 
 useEffect(()=>{
   if(freelancerToken){
-    
       loadAppliedStatus()
   }else{
-      setApplied("Not Applied")
-      
+      setApplied("Not Applied")  
   }
-
 },[freelancerToken,jobId])
 
-  return job ?  (
-    <div className="freelancerJobDetails">
-    <div className="jobDetails">
-      <h2>Job Details</h2>
-      <div className="details">
-        <h4>Title</h4>
-        <p>{job.title?job.title:"NA"}</p>
+return (
+  <>
+    {loading ? (
+     
+      <div className="flex justify-center items-center min-h-screen">
+        <LoadingSpinner />
       </div>
-      <div className="details">
-        <h4>Description</h4>
-        <p>{job.description?job.description:"NA"}</p>
-      </div>
-      <div className="details">
-        <h4>Category</h4>
-        <p>{job.catagory?job.catagory:"NA"}</p>
-      </div>
-      <div className="details">
-        <h4>Skills</h4>
-        <p>{job.skills?job.catagory:"NA"}</p>
-      </div>
-      <div className="details">
-        <h4>Budget</h4>
-        <p>${job.budget?job.budget:"NA"}</p>
-      </div>
-      <div className="details">
-        <h4>Deadline</h4>
-        <p>{job.deadline?job.deadline:"NA"} Days</p>
-      </div>
-    </div>
+    ) : job ? (
+      <div className="flex flex-col min-h-screen gap-5 max-w-5xl mx-auto p-5 mt-20 w-full">
+        
+   
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md w-full flex-grow">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-5">Job Details</h2>
 
-    <div className="proposalForm">
-      <h2>Send Proposal</h2>
-      <div className="proposalInputs">
-        <input type="text" placeholder="Your Name" onChange={(e)=>setName(e.target.value)}/>
+          <div className="space-y-4 text-gray-800">
+            <div>
+              <h4 className="text-lg font-semibold text-gray-700">Title</h4>
+              <p className="text-gray-600">{job?.title || "NA"}</p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-700">Description</h4>
+              <p className="text-gray-600">{job?.description || "NA"}</p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-700">Category</h4>
+              <p className="text-gray-600">{job?.catagory || "NA"}</p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-700">Skills</h4>
+              <p className="text-gray-600">{job?.skills || "NA"}</p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-700">Budget</h4>
+              <p className="text-gray-600">${job?.budget || "NA"}</p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-700">Deadline</h4>
+              <p className="text-gray-600">{job?.deadline || "NA"} Days</p>
+            </div>
+          </div>
+        </div>
+
+  
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+          
+    
+          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col h-full">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Send Proposal</h2>
+
+            <input
+              type="text"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 mb-4 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500"
+            />
+
+            <textarea
+              placeholder="Short Description About You"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 mb-4 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500 h-24 resize-none"
+            ></textarea>
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <input
+                type="number"
+                placeholder="Budget You Offer $"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                className="w-full md:w-1/2 p-3 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500"
+              />
+              <input
+                type="number"
+                placeholder="Days Needed"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                className="w-full md:w-1/2 p-3 border border-gray-300 rounded-md text-gray-800 placeholder-gray-500"
+              />
+            </div>
+
+            {applied === "Applied" || buttonStatus ? (
+              <button disabled className="w-full p-3 mt-4 bg-gray-400 text-white rounded-md cursor-not-allowed">
+                Applied
+              </button>
+            ) : (
+              <button
+                className="w-full p-3 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                onClick={sentProposal}
+              >
+                Send Proposal
+              </button>
+            )}
+          </div>
+
+  
+          <div className="bg-white rounded-lg p-6 shadow-md flex flex-col h-full">
+            <h4 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">Reviews</h4>
+
+            <div className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-hide">
+              {reviews && reviews.length > 0 ? (
+                reviews.map((review, index) => (
+                  <div key={index} className="bg-gray-100 p-4 rounded-lg shadow">
+                    {review.rating > 0 && (
+                      <div className="text-yellow-500 text-lg">
+                        {"★".repeat(review.rating)}
+                      </div>
+                    )}
+                    <p className="text-gray-700">"{review.message}"</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-600">No Reviews For the Client</p>
+              )}
+            </div>
+          </div>
+
+        </div>
+
       </div>
-      <div className="proposalInputs">
-        <textarea placeholder="Short Description About You" onChange={(e)=>setDescription(e.target.value)}></textarea>
-      </div>
-      <div className="proposalBudget">
-        <input type="number" placeholder="Budget You Offer $" onChange={(e)=>setBudget(e.target.value)}/>
-        <input type="number" placeholder="Days Needed" onChange={(e)=>setDeadline(e.target.value)} />
-      </div>
-      {applied==="Applied" ? (<button disabled>Applied</button>):(<button className="submitProposal" onClick={sentProposal}>Send Proposal</button>)}
-      
-    </div>
-  </div>
-  ):(<p>No Job Deatils</p>)
+    ) : (
+      <p className="text-center text-gray-700 text-lg">No Job Details</p>
+    )}
+  </>
+);
+
+
 }

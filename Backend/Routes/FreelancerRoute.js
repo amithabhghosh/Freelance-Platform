@@ -1,5 +1,5 @@
 const express=require("express")
-const {registerFreelancer, loginFreelancer, sentProposal, getProposalByFreelancer, FreelancerImageUpload, jobWithPendingStatus, jobSubmission, signUp, verifyOtp, resentOtp, token, freelancerProfileEdit, getFreelancerData, updateFreelancerProfile, getOneJob, getClientByJobId, getFreelancerProposalIsApplied, getJobByJobId, getJobIdByProposal} = require("../Controllers/FreelancerController")
+const {registerFreelancer, loginFreelancer, sentProposal, getProposalByFreelancer, FreelancerImageUpload, jobWithPendingStatus, jobSubmission, signUp, verifyOtp, resentOtp, token, freelancerProfileEdit, getFreelancerData, updateFreelancerProfile, getOneJob, getClientByJobId, getFreelancerProposalIsApplied, getJobByJobId, getJobIdByProposal, getProposalsWithAssigned, getPaymentByProposalId, getProposalDataByJobIdAndFreelancerId, getAnswerSubmittedByJobIdAndFreelancerId, resubmitAnswer, getPaymentDetailsOfFreelancer, getHoldPaymentOfFreelancer, sentFreelancerResetOtp, updateFreelancerPassword, getChartData} = require("../Controllers/FreelancerController")
 const upload = require("../Config/multerConfig")
 const router=express.Router()
 const protect=require("../MiddleWares/authMiddleware")
@@ -49,4 +49,24 @@ router.get("/getAppliedStatus/:jobId/:freelancerId",getFreelancerProposalIsAppli
 router.get("/getJobById/:jobId",getJobByJobId)
 
 router.get("/getProposalDetails/:proposalId",protect,authorize("Freelancer"),getJobIdByProposal)
+
+router.get("/getAcceptedProposals/:freelancerId",protect,authorize("Freelancer"),getProposalsWithAssigned)
+
+router.get("/getPaymentByProposal/:proposalId",protect,authorize("Freelancer"),getPaymentByProposalId)
+
+router.get("/getProposalDataByJobIdAndFreelancerId/:freelancerId/:jobId",protect,authorize("Freelancer"),getProposalDataByJobIdAndFreelancerId)
+
+router.get("/getAnswerSubmittedByJobIdAndFreelancerId/:jobId",protect,authorize("Freelancer"),getAnswerSubmittedByJobIdAndFreelancerId)
+
+router.put("/resubmitAnswer/:answerId",protect,authorize("Freelancer"), files.array('files', 5),resubmitAnswer)
+
+router.get("/getPaymentDetailsOfFreelancer/:freelancerId",protect,authorize("Freelancer"),getPaymentDetailsOfFreelancer)
+
+router.get("/getHoldPaymentOfFreelancer/:freelancerId", protect,authorize("Freelancer"),getHoldPaymentOfFreelancer)
+
+router.post("/sentFreelancerResetOtp",sentFreelancerResetOtp)
+
+router.put("/updateFreelancerPassword",updateFreelancerPassword)
+
+router.get("/getChartData", protect,authorize("Freelancer"),getChartData)
 module.exports=router

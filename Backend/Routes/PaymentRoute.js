@@ -9,6 +9,5 @@ const { stripeWebhookHandler } = require("../Controllers/webHookController")
 router.post("/checkout-session/:proposalId",protect,authorize("Client"),getCheckOutSession)
 
 
-router.post("/webhook",stripeWebhookHandler)
 
 module.exports=router

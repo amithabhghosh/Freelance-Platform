@@ -1,4 +1,9 @@
+const Freelancer = require("../Models/FreelancerModel");
 const Review=require("../Models/ReviewModel")
+const Client=require("../Models/ClientModel")
+const Sentiment = require('sentiment');
+const sentiment = new Sentiment();
+
 //Post Review
 const reviewPosting=async(req,res)=>{
     try {
@@ -7,16 +12,79 @@ const reviewPosting=async(req,res)=>{
             return res.status(400).json({ success: false, message: 'Invalid reviewer or reviewee type' });
         }
 
-        if (rating < 1 || rating > 5) {
-            return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5' });
+       
+if(revieweeType==="Freelancer"){
+    const reviews = await Review.find({ revieweeId });
+    const totalReviews = reviews.length;
+    const avgRating = totalReviews > 0 
+  ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews 
+  : rating;
+    await Freelancer.findByIdAndUpdate(revieweeId,
+        {rating:avgRating},
+        {new:true}
+    )
+}
+else if(revieweeType==="Client"){
+    const reviews = await Review.find({ revieweeId });
+    const totalReviews = reviews.length;
+    const avgRating = totalReviews > 0 
+  ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews 
+  : rating;
+    await Client.findByIdAndUpdate(revieweeId,
+        {rating:avgRating},
+        {new:true}
+    )
+}
+
+        const existingReview = await Review.findOne({
+            jobId,
+            reviewerId,
+            revieweeId // Ensure only this specific reviewer is checked
+        });
+
+        if (existingReview) {
+            return res.json({ success: false, message: "You have already reviewed this job." });
         }
 
-        const newReview = new Review({ reviewerId, reviewerType, revieweeId, revieweeType, jobId, rating, message });
+        const result =await  sentiment.analyze(message);
+const reviewScore=await result.score
+        const newReview = new Review({ reviewerId, reviewerType, revieweeId, revieweeType, jobId, rating, message,reviewScore:reviewScore });
         await newReview.save();
 
         res.status(201).json({ success: true, message: 'Review added successfully', data: newReview });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+const getFreelancerReviewsByScore=async(req,res)=>{
+    try {
+        const { freelancerId } = req.params;
+
+        
+        const topReviews = await Review.find({ revieweeId: freelancerId, revieweeType: "Freelancer" })
+            .sort({ reviewScore: -1 }) 
+            .limit(3);
+
+        res.json({ success: true, topReviews });
+    } catch (error) {
+        res.json({ success: false, message:error.message });
+    }
+}
+
+
+const getClientReviewsByScore=async(req,res)=>{
+    try {
+        const { clientId } = req.params;
+
+        
+        const topReviews = await Review.find({ revieweeId: clientId, revieweeType: "Client" })
+            .sort({ reviewScore: -1 }) 
+            .limit(3);
+
+        res.json({ success: true, topReviews });
+    } catch (error) {
+        res.json({ success: false, message:error.message });
     }
 }
 
@@ -42,4 +110,4 @@ const reviewGettingByClient=async(req,res)=>{
     }
 }
 
-module.exports={reviewGettingByClient,reviewGettingByFreelancer,reviewPosting}
+module.exports={getClientReviewsByScore,getFreelancerReviewsByScore,reviewGettingByClient,reviewGettingByFreelancer,reviewPosting}

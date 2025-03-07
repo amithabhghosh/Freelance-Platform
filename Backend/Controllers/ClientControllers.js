@@ -9,7 +9,8 @@ require("dotenv").config()
 const generateOTP = require("../utilities/generateOtp")
 const sendOTP=require("../utilities/mailSender")
 const Freelancer = require("../Models/FreelancerModel")
-
+const Payment = require("../Models/PaymentModel")
+const mongoose = require('mongoose');
 let otpStore = {};
 const OTP_EXPIRATION = 5 * 60 * 1000;
 //Client Register
@@ -21,29 +22,27 @@ const registerClient=async(req,res)=>{
         return res.status(400).json({ success: false, message: "Email is required" });
     }
 
-    console.log("Checking if freelancer exists...");
     const existingFreelancer = await Client.findOne({ email });
 
     if (existingFreelancer) {
-        console.log("Freelancer already exists.");
+        console.log("Client already exists.");
         return res.status(400).json({ success: false, message: "Freelancer Already Exists" });
     }
 
-    console.log("Generating OTP...");
+
     const otp = generateOTP();
     const expiresAt = Date.now() + OTP_EXPIRATION;
     
     otpStore[email] = { otp, expiresAt };
 
-    console.log(`OTP generated: ${otp} (expires at ${expiresAt})`);
 
-    await sendOTP(email, otp); // Ensure this function works properly
+    await sendOTP(email, otp); 
 
-    console.log("OTP sent successfully.");
+   
     res.status(200).json({ success: true, message: "OTP Sent Successfully" });
 
 } catch (error) {
-    console.error("Error Sending OTP:", error);
+   
     res.status(500).json({ success: false, message: "Error Sending OTP", error: error.message });
 }
 }
@@ -76,6 +75,10 @@ const signUp=async(req,res)=>{
     review,
     }=req.body
 try {
+    const clientPhone=await Client.findOne({phone:phone})
+    if(clientPhone){
+       return res.json({success:false,message:"Phone Number Exist"})
+    }
     const salt=await bcrypt.genSalt(10) 
     const hashedPassword= await bcrypt.hash(password,salt)
     const newFreelancer=await Client.create({
@@ -89,9 +92,9 @@ try {
      review,
     
     })
-    return res.status(200).json({success:true,message:"Freelancer Created Successfully",newFreelancer})
+    return res.json({success:true,message:"Freelancer Created Successfully",newFreelancer})
 } catch (error) {
-    return res.status(500).json({success:false,messsage:error.message})
+    return res.json({success:false,messsage:error.message})
 }
 
     
@@ -103,16 +106,16 @@ const loginClient=async (req,res)=>{
     try {
         const user=await Client.findOne({email})
         if(!user){
-return res.status(400).json({success:false,message:"User Not Exists"})
+return res.json({success:false,message:"User Not Exists"})
         }
         const isMatch=await bcrypt.compare(password,user.password)
         if(!isMatch){
-            return res.status(400).json({success:false,message:"Invalid Credinals"})
+            return res.json({success:false,message:"Invalid Credinals"})
         }
         const token =await jwt.sign({id:user._id},process.env.SECRET_KEY, { expiresIn: "1d" })
         return res.status(200).json({success:true,message:"Login Succesful",token,client:user})
     } catch (error) {
-       return res.status(500).json({success:false,message:"Login Unsuccessful"})
+       return res.json({success:false,message:"Login Unsuccessful"})
     }
 }
 
@@ -212,16 +215,18 @@ const ClientImageUpload=async(req,res)=>{
 const updateJobAssignedStatus=async(req,res)=>{
     const {id}=req.params
     try {
-        const job=await Job.findByIdAndUpdate(
-            
-                id,
-                {status:"assigned"},
-                {new:true}
-            
-        )
-        if(!job){
-            return res.status(400).json({success:false,message:"Job Not Found"})
+        const job = await Job.findByIdAndUpdate(
+            id,
+            {status:"assigned"},
+            {new:true}
+
+        );
+
+        if (!job) {
+            return res.status(404).json({ success: false, message: "Job Not Found" });
         }
+
+        
         return res.status(200).json({success:true,message:"Job Assigned Succesfully",job})
     } catch (error) {
         return res.status(500).json({success:false,message:error.message})
@@ -287,7 +292,7 @@ try {
     const {jobId}=req.params
 
 
-    const submissions = await Submission.find({ jobId }).populate('freelancerId', 'name email');
+    const submissions = await Submission.findOne({ jobId }).populate('freelancerId', 'name email');
 
     res.status(200).json({ success: true, submissions });
 } catch (error) {
@@ -329,6 +334,7 @@ const getJobByJobId=async(req,res)=>{
        if(!job){
         return res.json({success:false,message:"Job Not found"})
        }
+       console.log(job)
        return res.json({success:true,job})
     } catch (error) {
         res.json({success:false,message:error.message})
@@ -364,4 +370,229 @@ return res.json({success:true,freelancer})
     }
 }
 
-module.exports={getFreelancerByFreelancerId,getProposalByProposalId,getJobByJobId,registerClient,loginClient,updataClientData,getClientData,postJob,signUp,verifyOtp,getPostedJobByClient,getProposalsRecievedByClient,updateProposalStatus,proposalsRecievedForJob,ClientImageUpload,updateJobAssignedStatus,updateJobCompleteStatus,messagePostedByClient,messageRecievedForClientAndFreelancer,getJobAnswer}
+const getJobAssignedClient=async(req,res)=>{
+    const clientId=req.user._id
+    try {
+        const Alljobs=await Job.find({ClientId:clientId})
+        
+        if(!Alljobs){
+            return res.json({success:false,message:"No Job Found"})
+        }
+const jobs = await Alljobs.filter(item=>item.status  !== "pending")
+
+if(!jobs){
+    res.json({success:false,message:"No Job Found"})
+}
+        return res.json({success:true,jobs})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+const getJobByProposalId=async(req,res)=>{
+    const {proposalId}=req.params
+    try {
+        const job=await Proposal.findById(proposalId)
+      
+        if(!job){
+            res.json({success:false,message:"No Job Found"})
+        }
+        res.json({success:true,job})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+
+const getPaymentDataByJobId=async(req,res)=>{
+    const jobId=req.params.jobId
+    try {
+        const data=await Payment.findOne({jobId: new mongoose.Types.ObjectId(jobId)})       
+        if(!data){
+        return res.json({success:false,message:"No Payment Found"})
+        }
+        res.json({success:true,data})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+const getProposalByClientIdAndClientId=async(req,res)=>{
+    const {clientId,jobId}=req.params
+    try {
+        const proposal=await Proposal.findOne({clientId:clientId,jobId:jobId})
+        if(!proposal){
+            return res.json({success:false,message:"No Proposal Found"})
+        }
+        return res.json({success:true,proposal})
+    } catch (error) {
+        res.json({success:false,message:error.messsage})
+    }
+}
+
+
+
+const rejectAnswerSubmission=async(req,res)=>{
+const {id}=req.body
+    try {
+        const answer=await Submission.findByIdAndUpdate(
+            id,
+            {isOk:"Rejected"},
+            {new:true}
+        )
+
+        if(!answer){
+            return res.json({success:false,message:"Not Updated"})
+        }
+        res.json({success:true,answer})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+
+const finalJobSubmission=async(req,res)=>{
+  const {submissionId} = req.params
+const {jobId,clientId}=req.body
+    try {
+const submissionDetails=await Submission.findById(submissionId)
+const freelancerId=submissionDetails.freelancerId
+
+
+      const submission = await Submission.findByIdAndUpdate(
+            submissionId,
+            {isOk:"Completed"},
+            {new:true}
+        )
+
+        if(!submission){
+            return res.json({success:false,message:"Submission Not Found"})
+        }
+
+      const job = await Job.findByIdAndUpdate(
+            jobId,
+            {status:"completed"},
+            {new:true}
+        )
+
+if(!job){
+    return res.json({success:false,message:"Job Not Found"})
+}
+
+        if (!jobId || !clientId || !freelancerId) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        const payment =  await Payment.findOneAndUpdate(
+            { jobId: jobId, clientId: clientId, freelancerId:freelancerId }, // Matching criteria
+            { $set: { status: "completed" } }, 
+            { new: true } 
+        );
+
+
+        if(!payment){
+            return res.json({success:false,message:"Payment Not Found"})
+        }
+
+
+        const newEarnings = payment.amount * 0.95;
+
+
+        const freelancer=await Freelancer.findByIdAndUpdate(
+            freelancerId,
+            { $inc: { jobsCompleted: 1 , amount:newEarnings} }, 
+            { new: true }
+        )
+if(!freelancer){
+    return res.json({success:false,message:"Freelancer Not Found"})
+}
+        res.json({success:true,message:"Completed SuccessFully"})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+
+const sentClientResetOtp=async(req,res)=>{
+    const { email } = req.body;
+    try {
+        if (!email) {
+            return res.json({ success: false, message: "Email is required" });
+        }
+     const existingAdmin = await Client.findOne({ email });
+     if (!existingAdmin) {
+        
+        return res.json({ success: false, message: "Email Not Exist" });
+    }
+    const otp = generateOTP();
+    const expiresAt = Date.now() + OTP_EXPIRATION;
+    
+    otpStore[email] = { otp, expiresAt };
+    
+    await sendOTP(email, otp);
+    res.json({ success: true, message: "OTP Sent Successfully" });
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+const updateClientPassword=async(req,res)=>{
+    const {email,password}=req.body
+    try {
+        const client = await Client.findOne({ email });
+        if (!client) {
+            return res.json({ message: "Client not found" });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        client.password = hashedPassword;
+        await client.save();
+
+        res.json({success:true, message: "Password updated successfully" });
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+const getPostedJobs=async(req,res)=>{
+    const {clientId}=req.params
+    try {
+        const jobs=await Job.find({ClientId:clientId})
+        if(!jobs){
+            res.json({success:false,message:"No Jobs Posted"})
+        }
+        jobsPosted=await jobs.length
+const completedJobs=await jobs.filter(item=>item.status==="completed")
+const completedJobsLength=await completedJobs.length
+
+const pendingJobs=await jobs.filter(item=>item.status==="pending")
+const pendingJobsLength=await pendingJobs.length
+
+const assignedJobs=await jobs.filter(item=>item.status==="assigned")
+const assignedJobslength=await assignedJobs.length
+
+        res.json({success:true,jobs,jobsPosted,completedJobsLength,pendingJobsLength,assignedJobslength})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+}
+
+const getPaymentByClient=async(req,res)=>{
+    const {clientId}=req.params
+    try {
+        const payments = await Payment.find({ clientId: clientId });
+        if (!payments || payments.length === 0) {
+            return res.json({ success: false, message: "No Payment Found" });
+        }
+
+     
+        const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
+
+        res.json({ success: true, totalAmount, payments });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+}
+
+module.exports={getPaymentByClient,getPostedJobs,updateClientPassword,sentClientResetOtp,finalJobSubmission,rejectAnswerSubmission,getProposalByClientIdAndClientId,getPaymentDataByJobId,getJobAssignedClient,getJobByProposalId,getFreelancerByFreelancerId,getProposalByProposalId,getJobByJobId,registerClient,loginClient,updataClientData,getClientData,postJob,signUp,verifyOtp,getPostedJobByClient,getProposalsRecievedByClient,updateProposalStatus,proposalsRecievedForJob,ClientImageUpload,updateJobAssignedStatus,updateJobCompleteStatus,messagePostedByClient,messageRecievedForClientAndFreelancer,getJobAnswer}

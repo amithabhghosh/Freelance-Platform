@@ -7,6 +7,7 @@ const paymentSchema=new mongoose.Schema({
     freelancerId:{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer',required:true},
     amount:{type:Number,required:true},
     stripeSessionId:{type:String},
-    status:{type:String,enum:["hold","completed","rejected"],default:"hold"}
+    status:{type:String,enum:["hold","completed","rejected"],default:"hold"},
+    date: { type: Date, default: Date.now }
 })
 module.exports=mongoose.model("Payment",paymentSchema)

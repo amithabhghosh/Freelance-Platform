@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import {checkClientTokenExpiration} from '../checkTokenExpiry'
 export const ClientAuthRoutes = ({children}) => {
+useEffect(()=>{
+  checkClientTokenExpiration()
+},[])
+
   const navigate=useNavigate()
   const clientToken=localStorage.getItem("clientToken")
 

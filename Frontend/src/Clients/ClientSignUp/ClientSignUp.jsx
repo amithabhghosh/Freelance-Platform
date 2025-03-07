@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "./ClientSignUp.css";
+// import "./ClientSignUp.css";
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from '../../connectApi'
+import ClientSignUpBanner from '../../assets/images/ClientSignUpBanner.jpg'
 export const ClientSignUp = () => {
   const navigate=useNavigate()
   const [countries, setCountries] = useState([]);
@@ -22,7 +23,7 @@ const [confirmPassword,setConfirmPassword]=useState("")
 const [confirmError,setConfirmError]=useState("")
 const [countryError,setCountryError]=useState("")
 const [phoneError,setPhoneError]=useState("")
-const [otpButtonText,setOtpButtonText]=useState("Sent OTP")
+const [otpButtonText,setOtpButtonText]=useState("OTP")
 const [isDisabled,setIsDisabled]=useState(false)
 const [timer,setTimer]=useState(0)
 const emailRegex=/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -55,7 +56,7 @@ const interval=setInterval(()=>{
   setTimer((prev)=>prev-1)
 },1000)
 return()=> clearInterval(interval)
-}else if(timer===0 && otpButtonText !== "Sent OTP"){
+}else if(timer===0 && otpButtonText !== "OTP"){
   setIsDisabled(false)
   setOtpButtonText("Resend")
   }
@@ -105,7 +106,9 @@ const sentOtp=async()=>{
     })
     console.log(response.data)
     if(response.data.success){
-      return toast.success("OTP Sent SuccessFuly")
+      return null
+    }else{
+      toast.success(response.data.message)
     }
   } catch (error) {
     return toast.error(error.message)
@@ -162,75 +165,128 @@ const submitForm=async()=>{
     if(response.data.success){
       toast.success("CLIENT REGISTRATION SUCCESSFULL")
   navigate("/clientLogin")
+    }else{
+      toast.error(response.data.message)
     }
   } catch (error) {
     toast.error(error.message)
   }
 }
   return (
-    <div className="clientSignUp">
-      <div className="clientSignUpContainer">
-        {/* Left Side - Content */}
-        <div className="clientSignUpContent">
-          <p>
-            🚀 <span>Find top-tier talent</span> for your projects!  
-            Whether you're looking for designers, developers, or content creators,  
-            <span>build your dream team</span> today and get the job done with <span>expert freelancers.</span>  
-            <br /><br /> Sign up now and start hiring! 🎯
-          </p>
+
+
+
+<div 
+  className="relative flex items-center justify-center mt-20 mx-4 sm:mx-6 mb-6 p-6 sm:p-8 rounded-2xl overflow-hidden bg-cover bg-center"
+  style={{ backgroundImage: `url(${ClientSignUpBanner})` }}
+>
+
+  <div className="absolute inset-0 bg-black/60"></div>
+
+  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full max-w-6xl gap-6 sm:gap-10">
+    
+    
+    <div className="w-full md:w-1/2 text-white text-center md:text-left font-bold text-base sm:text-lg md:text-2xl leading-relaxed max-w-lg">
+      🚀 <span className="text-orange-500">Find top-tier talent</span> for your projects!  
+      Build your dream team with <span className="text-orange-500">expert freelancers.</span>  
+      <br /><br /> Sign up now and start hiring! 🎯
+    </div>
+
+    {/* Right Side - Form */}
+    <div className="bg-white/20 backdrop-blur-lg p-4 sm:p-6 rounded-xl shadow-lg text-white w-full md:w-3/5 lg:w-1/2 max-w-lg">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        <input type="text" placeholder="Name" required 
+          className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" 
+          onChange={nameHandler} 
+        />
+        <div className="text-red-500 text-xs sm:text-sm">{nameError}</div>
+
+        {/* Email & Send OTP */}
+        <div className="flex gap-2 sm:gap-3">
+          <input type="email" placeholder="Email" required 
+            className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" 
+            onChange={emailHandler} 
+          />
+          <button 
+            className="bg-orange-500 px-3 sm:px-4 py-2 sm:py-2 rounded-lg text-white font-bold hover:bg-orange-600 transition-all text-sm sm:text-base w-28 sm:w-32 lg:w-40" 
+            onClick={sentOtp} disabled={isDisabled}
+          >
+            {otpButtonText}
+          </button>
         </div>
+        <div className="text-red-500 text-xs sm:text-sm">{emailError}</div>
 
-        {/* Right Side - Signup Form */}
-        <div className="clientSignUpForm">
-          <div className="form">
-            <input type="text" placeholder="Name" required onChange={nameHandler} />
-            <div className="error">{nameError}</div>
-
-            <div className="email">
-            <input type="email" placeholder="Email" required onChange={emailHandler}/>
-            <button onClick={sentOtp} disabled={isDisabled}>{otpButtonText}</button>
-            </div>
-            <div className="error">{emailError}</div>
-
-<div className="otpVerify">
-  <input type="text" placeholder="OTP" onChange={otpHandler}/>
-  <button onClick={verifyOtp}>{verifyButton}</button>
-</div>
-<div className="error">{otpError}</div>
-
-            <input type="password" placeholder="Password" required onChange={passwordHandler}/>
-            <div className="error">{passwordError}</div>
-            <input type="password" placeholder="Confirm Password" required onChange={confirmHandler}/>
-<div className="error">{confirmError}</div>
-            {/* Country Select */}
-            <select value={selectedCountry} onChange={handleCountryChange} required>
-              <option value="">Select a country</option>
-              {countries.map((country, index) => (
-                <option key={index} value={country.name}>
-                  {country.name} ({country.dialCode})
-                </option>
-              ))}
-            </select>
-<div className="error">{countryError}</div>
-            {/* Phone Number */}
-            <div className="formPhone">
-              <input type="text" value={phoneCode} readOnly className="phoneCode" />
-              <input
-                type="text"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="Enter phone number"
-                required
-              />
-            </div>
-<div className="error">{phoneError}</div>
-            <button onClick={submitForm}>Sign Up as Client</button>
-            <div className="al">
-              <p>Already Have an Account? <span onClick={toClientLogin}>Login</span></p>
-            </div>
-          </div>
+        {/* OTP & Verify OTP */}
+        <div className="flex gap-2 sm:gap-3">
+          <input type="text" placeholder="OTP"
+            className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" 
+            onChange={otpHandler} 
+          />
+          <button 
+            className="bg-orange-500 px-3 sm:px-4 py-2 sm:py-2 rounded-lg text-white font-bold hover:bg-orange-600 transition-all text-sm sm:text-base w-28 sm:w-32 lg:w-40" 
+            onClick={verifyOtp}
+          >
+            {verifyButton}
+          </button>
         </div>
+        <div className="text-red-500 text-xs sm:text-sm">{otpError}</div>
+
+        {/* Password Fields */}
+        <input type="password" placeholder="Password" required 
+          className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" 
+          onChange={passwordHandler} 
+        />
+        <div className="text-red-500 text-xs sm:text-sm">{passwordError}</div>
+
+        <input type="password" placeholder="Confirm Password" required 
+          className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" 
+          onChange={confirmHandler} 
+        />
+        <div className="text-red-500 text-xs sm:text-sm">{confirmError}</div>
+
+        {/* Country Selection */}
+        <select className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base"
+          value={selectedCountry} onChange={handleCountryChange} required
+        >
+          <option value="">Select a country</option>       
+          {countries.map((country, index) => (
+            <option key={index} value={country.name} className="text-black">
+              {country.name} ({country.dialCode})
+            </option>              
+          ))}
+        </select>
+        <div className="text-red-500 text-xs sm:text-sm">{countryError}</div>
+
+        {/* Phone Number */}
+        <div className="flex gap-2 sm:gap-3">
+          <input type="text" value={phoneCode} readOnly 
+            className="w-12 sm:w-16 text-center p-2 sm:p-3 bg-white/30 rounded-lg text-white text-sm sm:text-base" 
+          />
+          <input type="text" placeholder="Phone number"
+            className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base"  
+            value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}
+          />
+        </div>
+        <div className="text-red-500 text-xs sm:text-sm">{phoneError}</div>
+
+        {/* Sign Up Button */}
+        <button 
+className="bg-orange-500 p-2 sm:p-3 rounded-lg text-white font-bold hover:bg-orange-600 transition-all text-sm sm:text-base w-full"  
+          onClick={submitForm}
+        >
+          Sign Up as Client
+        </button>
+
+        {/* Already have an account */}
+        <p className="text-center text-sm sm:text-base mt-2">
+          Already Have an Account? <span className="text-orange-500 cursor-pointer font-bold" onClick={toClientLogin}>Login</span>
+        </p>
       </div>
     </div>
+
+  </div>
+</div>
+
+
   );
 };

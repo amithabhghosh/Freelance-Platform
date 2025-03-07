@@ -5,7 +5,7 @@ export const PayementCancelPage = () => {
     <div style={{ textAlign: "center", marginTop: "50px" }}>
     <h1>Payment Canceled ❌</h1>
     <p>Your payment was not completed. You can try again.</p>
-    <Link to="/" style={{ textDecoration: "none", fontSize: "18px", color: "blue" }}>
+    <Link to="/clientDashboard" style={{ textDecoration: "none", fontSize: "18px", color: "blue" }}>
         Go Back to Home
     </Link>
 </div>

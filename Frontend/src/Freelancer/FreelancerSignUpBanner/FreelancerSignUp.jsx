@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import "./FreelancerSignUp.css";
+
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import API from '../../connectApi'
+import SignUpCover from '../../assets/images/SignUpCover.jpg'
+
+
 export const FreelancerSignUp = () => {
 const navigate=useNavigate()
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-const [buttonText,setButtonText]=useState("Sent OTP")
+const [buttonText,setButtonText]=useState("OTP")
 const [isDisabled,setIsDisabled]=useState(false)
 const [timer,setTimer]=useState(0)
 const [email,setEmail]=useState("")
@@ -56,7 +59,7 @@ const interval=setInterval(()=>{
   setTimer((prev)=>prev-1)
 },1000)
 return()=> clearInterval(interval)
-}else if(timer===0 && buttonText !== "Sent OTP"){
+}else if(timer===0 && buttonText !== "OTP"){
 setIsDisabled(false)
 setButtonText("Resend")
 }
@@ -109,9 +112,11 @@ try {
   const response=await API.post("/freelancer/sentOtp",{email}, {
     headers: { "Content-Type": "application/json" } 
   })
-  console.log(response.data)
+ 
   if(response.data.success){
-    return toast.success("OTP Sent SuccessFuly")
+    return null
+  }else{
+    toast.error(response.data.message)
   }
 } catch (error) {
   return toast.error(error.message)
@@ -130,6 +135,8 @@ const verifyOtp=async()=>{
     toast.success("OTP VERIFIED")
     setOtpButtonText("VERIFIED")
     setOtpVerified(true)
+   }else{
+    toast.error(response.data.message)
    }
   } catch (error) {
     toast.error(error.message)
@@ -184,69 +191,79 @@ navigate("/freelancerLogin")
 
 }
   return (
-    <div className="freelancerSignUp">
-      <div className="freelancerSignUpContainer">
-        {/* Left Side - Signup Content */}
-        <div className="freelancerSignUpContent">
-          <p>
-            🚀 Turn your <span>skills</span> into income!  
-            Join the fastest-growing <span>freelancing</span> platform.  
-            Work <span>remotely</span>, set your own rates, and get paid securely!  
-            <br /><br /> Sign up & start earning today! 💼
-          </p>
+
+
+
+
+<div className="relative flex items-center justify-center mt-20 mx-4 sm:mx-6 mb-6 p-6 sm:p-8 rounded-2xl overflow-hidden bg-cover bg-center" style={{ backgroundImage: `url(${SignUpCover})` }}>
+  {/* Dark Overlay */}
+  <div className="absolute inset-0 bg-black/60"></div>
+
+  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full max-w-6xl gap-6 sm:gap-10">
+    
+    {/* Left Side - Signup Content */}
+    <div className="text-white text-center md:text-left font-bold text-base sm:text-lg md:text-2xl leading-relaxed max-w-lg">
+      🚀 Turn your <span className="text-orange-500">skills</span> into income!  
+      Join the fastest-growing <span className="text-orange-500">freelancing</span> platform.  
+      Work <span className="text-orange-500">remotely</span>, set your own rates, and get paid securely!  
+      <br /><br /> Sign up & start earning today! 💼
+    </div>
+
+    {/* Right Side - Form */}
+    <div className="bg-white/20 backdrop-blur-lg p-4 sm:p-6 rounded-xl shadow-lg text-white w-full md:w-3/5 lg:w-1/2 max-w-lg">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        <input type="text" placeholder="Name" required onChange={nameHandle} className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" />
+        <div className="text-red-500 text-xs sm:text-sm">{nameError}</div>
+
+        <div className="flex gap-2 sm:gap-3">
+          <input type="email" placeholder="Email" required onChange={emailHandeler} className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" />
+          <button onClick={otpSent} disabled={isDisabled}            className="bg-orange-500 px-3 sm:px-4 py-2 sm:py-2 rounded-lg text-white font-bold hover:bg-orange-600 transition-all text-sm sm:text-base w-28 sm:w-32 lg:w-40">{buttonText}</button>
         </div>
+        <div className="text-red-500 text-xs sm:text-sm">{emailError}</div>
 
-        {/* Right Side - Form */}
-        <div className="freelancerSignUpForm">
-          <div className="form">
-            <input type="text" placeholder="Name" required onChange={nameHandle}/>
-            <div className="error">{nameError}</div>
-            <div className="email">
-            <input type="email" placeholder="Email" required onChange={emailHandeler}/>
-            <button onClick={otpSent} disabled={isDisabled}>{buttonText}</button>
-            </div>
-            <div className="error">{emailError}</div>
-            <div className="otpVerify">
-            <input type="text" placeholder="OTP" onChange={otpHandle}/>
-            <button onClick={verifyOtp}>{otpButtonText}</button>
-            </div>
-            <div className="error">{otpError}</div>
-            <input type="password" placeholder="Password" required onChange={passwordHandler}/>
-            <div className="error">{passwordError}</div>
-            <input type="password" placeholder="Confirm Password" required onChange={confirmHandler}/>
-            <div className="error">{confirmPasswordError}</div>
-<input type="text"  placeholder="Skills" onChange={skillHandler}/>
-            {/* Country Selection */}
-            <select value={selectedCountry} onChange={handleCountryChange} required>
-              <option value="">Select a country</option>
-              {countries.map((country, index) => (
-                <option key={index} value={country.name}>
-                  {country.name} ({country.dialCode})
-                </option>
-              ))}
-            </select>
-            <div className="error">{countryError}</div>
-
-            {/* Phone Number */}
-            <div className="formPhone">
-              <input type="text" value={phoneCode} readOnly className="phoneCode" />
-              <input
-                type="text"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="Enter phone number"
-                required
-              />
-            </div>
-            <div className="error">{phoneNumberError}</div>
-
-            <button type="submit" onClick={submitForm}>Sign Up As Freelancer</button>
-          </div>
-          <div className="alreadyAccount">
-            <p>Already Have an Account? <span onClick={toFreelancerLogin}>Login</span></p>
-          </div>
+        <div className="flex gap-2 sm:gap-3">
+          <input type="text" placeholder="OTP" onChange={otpHandle} className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" />
+          <button onClick={verifyOtp}             className="bg-orange-500 px-3 sm:px-4 py-2 sm:py-2 rounded-lg text-white font-bold hover:bg-orange-600 transition-all text-sm sm:text-base w-28 sm:w-32 lg:w-40" >{otpButtonText}</button>
         </div>
+        <div className="text-red-500 text-xs sm:text-sm">{otpError}</div>
+
+        <input type="password" placeholder="Password" required onChange={passwordHandler} className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" />
+        <div className="text-red-500 text-xs sm:text-sm">{passwordError}</div>
+
+        <input type="password" placeholder="Confirm Password" required onChange={confirmHandler} className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" />
+        <div className="text-red-500 text-xs sm:text-sm">{confirmPasswordError}</div>
+
+        <input type="text" placeholder="Skills" onChange={skillHandler} className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base"/>
+
+        {/* Country Selection */}
+        <select value={selectedCountry} onChange={handleCountryChange} required className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base">
+          <option value="">Select a country</option>
+          {countries.map((country, index) => (
+            <option key={index} value={country.name} className="text-black">
+              {country.name} ({country.dialCode})
+            </option>
+          ))}
+        </select>
+        <div className="text-red-500 text-xs sm:text-sm">{countryError}</div>
+
+        {/* Phone Number */}
+        <div className="flex gap-2 sm:gap-3">
+          <input type="text" value={phoneCode} readOnly className="inputField w-12 sm:w-16 text-center bg-white/30 text-white rounded-lg text-sm sm:text-base" />
+          <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Enter phone number" required className="p-2 sm:p-3 bg-white/30 rounded-lg text-white placeholder-white outline-none w-full text-sm sm:text-base" />
+        </div>
+        <div className="text-red-500 text-xs sm:text-sm">{phoneNumberError}</div>
+
+        <button type="submit" onClick={submitForm} className="bg-orange-500 p-2 sm:p-3 rounded-lg text-white font-bold hover:bg-orange-600 transition-all text-sm sm:text-base w-full">Sign Up As Freelancer</button>
+      </div>
+
+      <div className="text-center mt-3 sm:mt-4">
+        <p className="text-sm sm:text-base">Already Have an Account? <span onClick={toFreelancerLogin} className="text-orange-500 font-bold cursor-pointer">Login</span></p>
       </div>
     </div>
+  </div>
+</div>
+
+
+
   );
 };

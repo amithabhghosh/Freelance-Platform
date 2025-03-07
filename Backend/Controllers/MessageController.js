@@ -10,9 +10,12 @@ try {
     if (!['Client', 'Freelancer'].includes(senderType) || !['Client', 'Freelancer'].includes(receiverType)) {
         return res.status(400).json({ success: false, message: 'Invalid sender or receiver type' });
     }
+    const imageUrl = req.file ? req.file.path : null;
 
-    const newMessage = new Message({ senderId, senderType, receiverId, receiverType, jobId, message });
+    const newMessage = new Message({ senderId, senderType, receiverId, receiverType, jobId, message,image:imageUrl });
     await newMessage.save();
+
+   
 
     res.status(201).json({ success: true, message: 'Message sent successfully', data: newMessage });
 } catch (error) {
@@ -38,4 +41,16 @@ const getConversation=async(req,res)=>{
         res.status(500).json({ success: false, error: error.message });
     }
 }
-module.exports={messageSent,getConversation}
+
+const conversation=async(req,res)=>{
+    
+        const { jobId } = req.params;
+        try {
+            const messages = await Message.find({ jobId }).sort({ timestamp: 1 }); 
+            res.json({ success: true, messages });
+        } catch (error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+
+}
+module.exports={messageSent,getConversation,conversation}

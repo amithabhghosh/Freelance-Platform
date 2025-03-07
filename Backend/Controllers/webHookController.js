@@ -10,6 +10,7 @@ const stripeWebhookHandler = async (req, res) => {
     let event;
 
     try {
+        // ✅ Use `req.body` as a raw buffer, not a parsed JSON object
         event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch (err) {
         console.error("Webhook signature verification failed:", err.message);
@@ -18,7 +19,6 @@ const stripeWebhookHandler = async (req, res) => {
 
     if (event.type === "checkout.session.completed") {
         const session = event.data.object;
-
         const { proposalId, jobId, freelancerId, clientId } = session.metadata;
 
         try {
@@ -41,6 +41,11 @@ const stripeWebhookHandler = async (req, res) => {
             // Update proposal status
             await Proposal.findByIdAndUpdate(proposalId, { status: "accepted" });
 
+            await Proposal.updateMany(
+                            { jobId: jobId, _id: { $ne: proposalId } }, 
+                            { $set: { status: "rejected" } } 
+                        ); 
+                        
             console.log(`✅ Payment verified for job ${jobId} and proposal ${proposalId}`);
             res.status(200).json({ received: true });
         } catch (error) {

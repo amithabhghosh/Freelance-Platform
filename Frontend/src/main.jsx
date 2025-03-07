@@ -1,10 +1,10 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import App from './App.jsx'
-import {createBrowserRouter,RouterProvider} from 'react-router-dom'
+import {BrowserRouter, createBrowserRouter,RouterProvider, useLocation} from 'react-router-dom'
 import { FrontPage } from './CommonPage/FrontPage/FrontPage.jsx'
 import { ClientSignUpPage } from './Pages/ClientPages/ClientSignUpPage.jsx'
 import { ClientLoginPage } from './Pages/ClientPages/ClientLoginPage.jsx'
@@ -31,16 +31,35 @@ import { ClientProposalPage } from './Pages/ClientPages/ClientProposalPage.jsx';
 import { ClientProposalDetailPage } from './Pages/ClientPages/ClientProposalDetailPage.jsx';
 import { PaymentSuccessPage } from './Pages/ClientPages/PaymentSuccessPage.jsx';
 import { PayementCancelPage } from './Pages/ClientPages/PayementCancelPage.jsx';
+import { ClientWorkPage } from './Pages/ClientPages/ClientWorkPage.jsx';
+import { FreelancerWorkPage } from './Pages/FreelancerPages/FreelancerWorkPage.jsx';
+import { FreelancerWorkDetailPage } from './Pages/FreelancerPages/FreelancerWorkDetailPage.jsx';
+import { ClientWorDetailPage } from './Pages/ClientPages/ClientWorDetailPage.jsx';
+import { FreelancerEarningPage } from './Pages/FreelancerPages/FreelancerEarningPage.jsx';
+import { AdminEarningsPage } from './Pages/AdminPages/AdminEarningsPage.jsx';
+import { AdminAddAdminPage } from './Pages/AdminPages/AdminAddAdminPage.jsx';
+import { AdminClientDetailPage } from './Pages/AdminPages/AdminClientDetailPage.jsx';
+import { AdminJobDetailPage } from './Pages/AdminPages/AdminJobDetailPage.jsx';
+
+import { ClientJobDetailPage } from './Pages/ClientPages/ClientJobDetailPage.jsx';
+import { ClientJobPage } from './Pages/ClientPages/ClientJobPage.jsx';
+import { CompanyPage } from './CommonPage/FrontPage/CompanyPage.jsx';
+import { ContactPage } from './CommonPage/FrontPage/ContactPage.jsx';
+import { ScrollToTop } from './ScrollToTop.jsx';
 
 const router=createBrowserRouter([
 
- 
+ {path: "/",
+  element: <ScrollToTop/>, // Wrap all routes with Layout
+  children:[
     {path:"/",element:<FrontPage/>},
     {path:"/clientSignUp",element:<ClientSignUpPage/>},
     {path:"/clientLogin",element:<ClientLoginPage/>},
     {path:"/adminLogin",element:<AdminLoginPage/>},
     {path:"/freelancerSignUp",element:<FreelancerSignUpPage/>},
     {path:"/freelancerLogin",element:<FreelancerLoginPage/>},
+{path:"/jobo",element:<CompanyPage/>},
+{path:"/job/contact",element:<ContactPage/>},
 
     {path:"/freelancerDashboard",element:<FreelancerAuthRoutes>
       <FreelancerDashboardPage/>
@@ -89,16 +108,55 @@ const router=createBrowserRouter([
   </ClientAuthRoutes>},
   {path:"/payment_Cancelled/:proposalId",element:<ClientAuthRoutes>
     <PayementCancelPage/>
-  </ClientAuthRoutes>}
+  </ClientAuthRoutes>},
+  {path:"/client/orders",element:<ClientAuthRoutes>
+    <ClientWorkPage/>
+  </ClientAuthRoutes>},
+  {path:"/freelancer/Works",element:<FreelancerAuthRoutes>
+    <FreelancerWorkPage/>
+  </FreelancerAuthRoutes>},
+  {path:"/freelancer/Works/:jobId",element:<FreelancerAuthRoutes>
+    <FreelancerWorkDetailPage/>
+  </FreelancerAuthRoutes>},
+  {path:"/client/Works/:jobId",element:<ClientAuthRoutes>
+    <ClientWorDetailPage/>
+  </ClientAuthRoutes>},
+  {path:"/freelancer/earnings",element:<FreelancerAuthRoutes>
+    <FreelancerEarningPage/>
+  </FreelancerAuthRoutes>},
+  {path:"/admin/earnings",element:<AdminAuthRoutes>
+    <AdminEarningsPage/>
+  </AdminAuthRoutes>},
+  {path:"/admin/addAdmin",element:<AdminAuthRoutes>
+    <AdminAddAdminPage/>
+  </AdminAuthRoutes>},
+  {path:"/admin/clientDetail/:clientId",element:<AdminAuthRoutes>
+    <AdminClientDetailPage/>
+  </AdminAuthRoutes>},
+  {path:"/admin/job/:jobId",element:<AdminAuthRoutes>
+    <AdminJobDetailPage/>
+  </AdminAuthRoutes>},
+  {path:"/client/job/:jobId",element:<ClientAuthRoutes>
+    <ClientJobDetailPage/>
+  </ClientAuthRoutes>},
+  {path:"/client/job/info",element:<ClientAuthRoutes>
+    <ClientJobPage/>
+      </ClientAuthRoutes>}
+  ]}
+    
 
 ])
 
+
+
+
 createRoot(document.getElementById('root')).render(
 
-<ContextProvider>
-<RouterProvider router={router} />
-<ToastContainer />
-</ContextProvider>
+  <ContextProvider>
+ 
+    <RouterProvider router={router} future={{ scrollRestoration: true }} />
+    <ToastContainer  />
+  </ContextProvider>
 
    
  
