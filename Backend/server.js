@@ -15,7 +15,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "https://jobo-vkhb.onrender.com",
         methods: ["GET", "POST"],
         credentials: true,
     },    transports: ["websocket", "polling"], // 👈 Add transports
@@ -23,7 +23,7 @@ const io = new Server(httpServer, {
 });
 
 app.use(cors({
-    origin: ["http://localhost:5173"], 
+    origin: ["https://jobo-vkhb.onrender.com"], 
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
