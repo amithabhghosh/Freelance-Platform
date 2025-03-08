@@ -137,7 +137,7 @@ const postJob=async(req,res)=>{
 const getPostedJobByClient=async(req,res)=>{
 const {clientId}=req.body
 try {
-    const jobs=await Job.find({ClientId:clientId})
+    const jobs=await Job.find({ClientId:clientId}).sort({ createdAt: -1 })
     if(!jobs){
        return res.status(400).json({success:false,message:"No Jobs Found"})
     }
@@ -152,7 +152,7 @@ const getProposalsRecievedByClient=async(req,res)=>{
 const {id}=req.params
 try {
    
-    const clientProposals=await Proposal.find({clientId:id})
+    const clientProposals=await Proposal.find({clientId:id}).sort({ createdAt: -1 })
 if(!clientProposals){
     return res.status(400).json({success:false,message:"No Proposals Recieved"})
 }
@@ -373,7 +373,7 @@ return res.json({success:true,freelancer})
 const getJobAssignedClient=async(req,res)=>{
     const clientId=req.user._id
     try {
-        const Alljobs=await Job.find({ClientId:clientId})
+        const Alljobs=await Job.find({ClientId:clientId}).sort({ createdAt: -1 })
         
         if(!Alljobs){
             return res.json({success:false,message:"No Job Found"})
@@ -580,7 +580,7 @@ const assignedJobslength=await assignedJobs.length
 const getPaymentByClient=async(req,res)=>{
     const {clientId}=req.params
     try {
-        const payments = await Payment.find({ clientId: clientId });
+        const payments = await Payment.find({ clientId: clientId }).sort({ createdAt: -1 });
         if (!payments || payments.length === 0) {
             return res.json({ success: false, message: "No Payment Found" });
         }

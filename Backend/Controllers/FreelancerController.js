@@ -162,7 +162,7 @@ clientId
 const getProposalByFreelancer=async(req,res)=>{
 const {id}=req.params
 try {
-    const freelancerProposals=await Proposal.find({freelancerId:id})
+    const freelancerProposals=await Proposal.find({freelancerId:id}).sort({ createdAt: -1 })
     if(!freelancerProposals){
         return res.status(400).json({success:false,message:"Proposals Not Found"})
     }
@@ -190,7 +190,7 @@ const FreelancerImageUpload=async(req,res)=>{
 //Get Job With pending Status
 const jobWithPendingStatus=async(req,res)=>{
     try {
-        const jobs=await Job.find({status:"pending"})
+        const jobs=await Job.find({status:"pending"}).sort({ createdAt: -1 })
         if(!jobs){
             return res.status(400).json({success:false,message:"No Jobs"})
         }
@@ -351,7 +351,7 @@ const getProposalsWithAssigned=async(req,res)=>{
     const {freelancerId}=req.params
     const status="accepted"
     try {
-        const proposals=await Proposal.find({freelancerId,status})
+        const proposals=await Proposal.find({freelancerId,status}).sort({ createdAt: -1 })
         console.log(proposals)
         if(proposals.length===0){
            return res.json({success:false,message:"No Proposal found"})
@@ -442,7 +442,7 @@ const resubmitAnswer=async(req,res)=>{
 const getPaymentDetailsOfFreelancer=async(req,res)=>{
     const {freelancerId}=req.params
     try {
-        const payments=await Payment.find({freelancerId:freelancerId,status:"completed"})
+        const payments=await Payment.find({freelancerId:freelancerId,status:"completed"}).sort({ createdAt: -1 })
 if(!payments){
     return res.json({success:false,message:"No Payment Yet"})
 }
@@ -546,7 +546,7 @@ const getDateRange = (filter) => {
         res.json({success:true,earnings});
     } catch (error) {
         res.json({success:false,message:error.message})
-        
+
     }
   }
 

@@ -1,6 +1,6 @@
 import axios from 'axios'
 const API = axios.create({
-    baseURL: "https://freelancebackend-gamma.vercel.app/api",
+    baseURL: "https://freelance-platform-ki5q.onrender.com/api",
     withCredentials: true,  
 });
 

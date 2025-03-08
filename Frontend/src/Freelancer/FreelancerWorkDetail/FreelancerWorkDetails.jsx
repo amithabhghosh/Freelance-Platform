@@ -22,7 +22,7 @@ export const FreelancerWorkDetails = () => {
 
 
 useEffect(() => {
-  const newSocket = io("https://freelancebackend-gamma.vercel.app", { reconnection: true, transports: ["polling"],withCredentials: true });
+  const newSocket = io("https://freelance-platform-ki5q.onrender.com", { reconnection: true, transports: ["polling"],withCredentials: true });
   setSocket(newSocket);
 
   if (freelancerId && jobId) {

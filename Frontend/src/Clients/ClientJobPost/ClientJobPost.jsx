@@ -6,7 +6,7 @@ import { ContextAPI } from '../../ContextAPI/ContextAPI';
 import { useNavigate } from "react-router-dom";
 export const ClientJobPost = () => {
     const navigate=useNavigate()
-    const {clientToken,clientUploadedJobs}=useContext(ContextAPI)
+    const {clientToken,clientUploadedJobs,clientData}=useContext(ContextAPI)
     const [title,setTitle]=useState("")
     const [description,setDescription]=useState("")
     const [catagory,setCatagory]=useState("")
@@ -16,7 +16,9 @@ export const ClientJobPost = () => {
 
 const jobPost=async()=>{
 
-
+if(!clientData.isVerified){
+  return toast.error("Account Deactivated")
+}
   
     if(!title.trim() || !description.trim() || !catagory.trim() || !budget || !deadline){
         return toast.error("Fields Are Missing")

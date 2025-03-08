@@ -97,7 +97,7 @@ return res.json({success:false,message:"Invalid Credinals"})
 //Get All Freelancer List
 const getAllFreelancer=async(req,res)=>{
 try {
-    const freelancers=await Freelancer.find().select("-password")
+    const freelancers=await Freelancer.find().select("-password").sort({ createdAt: -1 });
    return res.status(200).json({success:true,freelancers})
 } catch (error) {
    return res.status(500).json({success:false,message:error.message})
@@ -107,7 +107,7 @@ try {
 //Get All Client List
 const getAllClient=async(req,res)=>{
 try {
-    const clients=await Client.find().select("-password")
+    const clients=await Client.find().select("-password").sort({ createdAt: -1 })
    return res.status(200).json({success:true,clients})
 } catch (error) {
   return  res.status(500).json({success:false,message:error.message})
@@ -117,7 +117,7 @@ try {
 //Get All Job List
 const getAllJobs=async(req,res)=>{
     try {
-        const jobs=await Job.find()
+        const jobs=await Job.find().sort({ createdAt: -1 })
       return  res.status(200).json({success:true,jobs})
     } catch (error) {
        return res.status(500).json({success:false,message:error.message})
@@ -219,7 +219,7 @@ const getAllpayments=async(req,res)=>{
 const getAllAdmins=async(req,res)=>{
     const adminId=req.user._id
     try {
-        const admins = await Admin.find({ _id: { $ne: adminId } }); 
+        const admins = await Admin.find({ _id: { $ne: adminId } }).sort({ createdAt: -1 }); 
         if(admins.length===0){
             return res.json({success:false,message:"No other Admins"})
         }
