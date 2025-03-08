@@ -68,6 +68,8 @@ const satisfied=async(submissionId)=>{
 try {
   const response=await API.put(`/client/finalJobSubmission/${submissionId}`,{clientId:clientId,jobId:jobId},{headers:{token:clientToken}})
   if(response.data.success){
+    window.location.reload();
+
     setSatisFiedButtonStatus(true)
     toast.success("Job Completed SuccessFully")
    
