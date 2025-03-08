@@ -25,7 +25,7 @@ const chatBoxRef = useRef(null)
 
 
 useEffect(() => {
-  const newSocket = io("http://localhost:5000", { reconnection: true });
+  const newSocket = io("https://freelancebackend-gamma.vercel.app", { reconnection: true, transports: ["polling"] ,withCredentials: true});
   setSocket(newSocket);
 
   if (clientId && jobId) {

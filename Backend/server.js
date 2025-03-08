@@ -18,7 +18,8 @@ const io = new Server(httpServer, {
         origin: "http://localhost:5173",
         methods: ["GET", "POST"],
         credentials: true,
-    }
+    },    transports: ["websocket", "polling"], // 👈 Add transports
+
 });
 
 app.use(cors({
