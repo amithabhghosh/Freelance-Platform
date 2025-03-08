@@ -8,7 +8,8 @@ const clientSchema=new mongoose.Schema(
         phone:{type:Number,required:true,unique:true},
         country:{type:String,required:true},
         rating:{type:Number,default:0},
-        review:{type:String}
+        review:{type:String},
+        isVerified:{type:Boolean,default:true}
     }
 )
 module.exports=mongoose.model("Client",clientSchema)

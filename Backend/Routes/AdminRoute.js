@@ -1,5 +1,5 @@
 const express=require("express")
-const { registerAdmin, loginAdmin, getAllClient,getAllFreelancer, getAllJobs, getOneFreelancer, getOneClient, getOneJob, freelancerUpdate, getTotalAmountGained, getAllpayments, sentAdminOtp, verifyOtp, getAllAdmins, deleteAdminOtpsent, verifyDeleteOtp, deleteAdmin, updateAdminPassword, sentResetOtp, getChartData, inactiveFreelancer} = require("../Controllers/AdminController")
+const { registerAdmin, loginAdmin, getAllClient,getAllFreelancer, getAllJobs, getOneFreelancer, getOneClient, getOneJob, freelancerUpdate, getTotalAmountGained, getAllpayments, sentAdminOtp, verifyOtp, getAllAdmins, deleteAdminOtpsent, verifyDeleteOtp, deleteAdmin, updateAdminPassword, sentResetOtp, getChartData, inactiveFreelancer, inActiveClient, activateClient} = require("../Controllers/AdminController")
 const router=express.Router()
 const protect=require("../MiddleWares/authMiddleware")
 const authorize=require("../MiddleWares/authorize")
@@ -53,4 +53,8 @@ router.post("/sentResetOtp",sentResetOtp)
 router.get("/getChartData",protect,authorize("Admin"),getChartData)
 
 router.put("/inactiveFreelancer/:freelancerId",protect,authorize("Admin"),inactiveFreelancer)
+
+router.put("/inActiveClient/:clientId",protect,authorize("Admin"),inActiveClient)
+
+router.put("/activateClient/:clientId",protect,authorize("Admin"),activateClient)
 module.exports=router

@@ -362,4 +362,24 @@ const getDateRange = (filter) => {
         res.json({success:false,message:error.message})
     }
   }
-module.exports={inactiveFreelancer,getChartData,sentResetOtp,updateAdminPassword,deleteAdmin,verifyDeleteOtp,deleteAdminOtpsent,getAllAdmins,verifyOtp,sentAdminOtp,getAllpayments,getTotalAmountGained,registerAdmin,loginAdmin,getAllFreelancer,getAllClient,getAllJobs,freelancerUpdate,getOneFreelancer,getOneClient,getOneJob}
+
+  const activateClient=async(req,res)=>{
+    const {clientId}=req.params
+    try {
+         await Client.findByIdAndUpdate(clientId,{isVerified:true},{new:true})
+        res.json({success:true,message:"Updated Successfully"})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+  }
+
+  const inActiveClient=async(req,res)=>{
+    const {clientId}=req.params
+    try {
+        await Client.findByIdAndUpdate(clientId,{isVerified:false},{new:true})
+        res.json({success:true,message:"Updated Successfully"})
+    } catch (error) {
+        res.json({success:false,message:error.message})
+    }
+  }
+module.exports={inActiveClient,activateClient,inactiveFreelancer,getChartData,sentResetOtp,updateAdminPassword,deleteAdmin,verifyDeleteOtp,deleteAdminOtpsent,getAllAdmins,verifyOtp,sentAdminOtp,getAllpayments,getTotalAmountGained,registerAdmin,loginAdmin,getAllFreelancer,getAllClient,getAllJobs,freelancerUpdate,getOneFreelancer,getOneClient,getOneJob}
