@@ -83,7 +83,7 @@ if(clientId && clientToken){
       </div>
     </div>
 
-    {/* Timer Section */}
+
     <div className="min-w-[150px] flex items-center justify-center p-3 bg-gray-100 rounded-lg mt-4 md:mt-0">
       <ClientCoundownTimer deadline={proposalDeadline} jobStatus={props.status} startTime={startTime} />
     </div>

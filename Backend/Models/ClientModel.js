@@ -10,6 +10,6 @@ const clientSchema=new mongoose.Schema(
         rating:{type:Number,default:0},
         review:{type:String},
         isVerified:{type:Boolean,default:true}
-    }
+    } ,{ timestamps: true }
 )
 module.exports=mongoose.model("Client",clientSchema)

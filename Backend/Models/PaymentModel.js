@@ -9,5 +9,5 @@ const paymentSchema=new mongoose.Schema({
     stripeSessionId:{type:String},
     status:{type:String,enum:["hold","completed","rejected"],default:"hold"},
     date: { type: Date, default: Date.now }
-})
+}, { timestamps: true })
 module.exports=mongoose.model("Payment",paymentSchema)

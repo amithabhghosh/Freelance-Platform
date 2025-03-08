@@ -12,6 +12,6 @@ const freelanceSchema=new mongoose.Schema({
     jobsCompleted:{type:Number,default:0},
     isVerified:{type:Boolean,default:false},
     amount:{type:Number,default:0}
-})
+}, { timestamps: true })
 
 module.exports=mongoose.model("Freelancer",freelanceSchema)

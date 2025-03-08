@@ -546,6 +546,7 @@ const getDateRange = (filter) => {
         res.json({success:true,earnings});
     } catch (error) {
         res.json({success:false,message:error.message})
+        
     }
   }
 

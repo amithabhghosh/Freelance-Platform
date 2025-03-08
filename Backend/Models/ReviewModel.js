@@ -9,6 +9,6 @@ const reviewSchema=new mongoose.Schema({
     message: { type: String, required: true },
     reviewScore:{type:Number},
     createdAt: { type: Date, default: Date.now }
-})
+}, { timestamps: true })
 
 module.exports=mongoose.model("Review",reviewSchema)

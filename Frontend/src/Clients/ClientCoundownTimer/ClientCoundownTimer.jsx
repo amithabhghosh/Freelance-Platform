@@ -4,23 +4,28 @@ export const ClientCoundownTimer = ({ deadline, jobStatus, startTime }) => {
   const [timeLeft, setTimeLeft] = useState(null);
 
   useEffect(() => {
+    console.log("🔹 Received Props:", { deadline, startTime, jobStatus });
+
     if (!deadline || !startTime || jobStatus === "completed") {
-        
-        setTimeLeft(0);
-        return;
+      console.log("⚠️ Invalid data - Countdown not starting", { deadline, startTime, jobStatus });
+      setTimeLeft(0);
+      return;
     }
 
-    if (timeLeft !== null) return; 
-
+    // ✅ Convert `deadline` (days) to total seconds
     const totalTime = deadline * 24 * 60 * 60;
-    const elapsedTime = Math.max(0, Math.floor((Date.now() - new Date(startTime).getTime()) / 1000));
-    const remainingTime = Math.max(totalTime - elapsedTime, 0);
 
+    // ✅ Calculate elapsed time in seconds
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    const startTimeSeconds = Math.floor(new Date(startTime).getTime() / 1000); // Start time in seconds
+    const elapsedTime = currentTime - startTimeSeconds;
 
+    console.log("📌 Time Calculation:", { totalTime, elapsedTime });
 
-    setTimeLeft(remainingTime);
-}, [deadline, startTime, jobStatus]);  // Removed timeLeft dependency
-
+    // ✅ Compute remaining time
+    const remainingTime = totalTime - elapsedTime;
+    setTimeLeft(remainingTime > 0 ? remainingTime : 0);
+  }, [deadline, startTime, jobStatus]);
 
   useEffect(() => {
     if (timeLeft === null || timeLeft <= 0 || jobStatus === "completed") return;
@@ -35,9 +40,7 @@ export const ClientCoundownTimer = ({ deadline, jobStatus, startTime }) => {
       });
     }, 1000);
 
-    return () => {
-      clearInterval(timer);
-    };
+    return () => clearInterval(timer);
   }, [timeLeft, jobStatus]);
 
   const formatTime = () => {

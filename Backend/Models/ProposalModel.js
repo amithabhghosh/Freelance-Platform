@@ -9,5 +9,5 @@ const proposalSchema=new mongoose.Schema({
     deadline:{type:Number},
     status:{type:String,enum:["pending","accepted","rejected"],default:"pending"},
     startTime: { type: Date }
-})
+}, { timestamps: true })
 module.exports=mongoose.model("Proposal",proposalSchema)
