@@ -539,9 +539,10 @@ const getDateRange = (filter) => {
 
 
   const getChartData=async(req,res)=>{
+   const  freelancerId= req.user._id
     try {
         const filter = req.query.filter || "monthly";
-        const earnings=await Payment.find({date:getDateRange(filter),status:"completed"})
+        const earnings=await Payment.find({date:getDateRange(filter),status:"completed",freelancerId:freelancerId})
         res.json({success:true,earnings});
     } catch (error) {
         res.json({success:false,message:error.message})
