@@ -4,10 +4,10 @@ export const ClientCoundownTimer = ({ deadline, jobStatus, startTime }) => {
   const [timeLeft, setTimeLeft] = useState(null);
 
   useEffect(() => {
-    console.log("🔹 Received Props:", { deadline, startTime, jobStatus });
+    
 
     if (!deadline || !startTime || jobStatus === "completed") {
-      console.log("⚠️ Invalid data - Countdown not starting", { deadline, startTime, jobStatus });
+    
       setTimeLeft(0);
       return;
     }
@@ -20,7 +20,7 @@ export const ClientCoundownTimer = ({ deadline, jobStatus, startTime }) => {
     const startTimeSeconds = Math.floor(new Date(startTime).getTime() / 1000); // Start time in seconds
     const elapsedTime = currentTime - startTimeSeconds;
 
-    console.log("📌 Time Calculation:", { totalTime, elapsedTime });
+ 
 
     // ✅ Compute remaining time
     const remainingTime = totalTime - elapsedTime;

@@ -7,7 +7,7 @@ export const checkTokenExpiration = () => {
     const currentTime = Date.now() / 1000; // Convert to seconds
   
     if (decoded.exp < currentTime) {
-      console.log("Token expired. Removing from localStorage...");
+      
       localStorage.removeItem("freelancerToken");
       window.location.href = "/freelancerLogin"; // Redirect to login page
     }
@@ -23,7 +23,7 @@ export const checkTokenExpiration = () => {
     const currentTime = Date.now() / 1000; // Convert to seconds
   
     if (decoded.exp < currentTime) {
-      console.log("Token expired. Removing from localStorage...");
+     
       localStorage.removeItem("clientToken");
       window.location.href = "/clientLogin"; // Redirect to login page
     }
@@ -39,7 +39,7 @@ export const checkTokenExpiration = () => {
     const currentTime = Date.now() / 1000; // Convert to seconds
   
     if (decoded.exp < currentTime) {
-      console.log("Token expired. Removing from localStorage...");
+      
       localStorage.removeItem("adminToken");
       window.location.href = "/adminLogin"; // Redirect to login page
     }
